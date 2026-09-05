@@ -1,0 +1,27 @@
+<!--pages/add-event/add-event.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <view class="page-header">
+      <text class="page-title">添加事件</text>
+      <text class="page-subtitle">{{isPlace ? '记录地点的每次到访与体验' : '记录物品的重要时刻'}}</text>
+    </view>
+
+    <view class="event-types">
+      <view class="event-card" wx:for="{{eventTypes}}" wx:key="value" bindtap="selectEventType" data-type="{{item.value}}">
+        <view class="card-icon-wrapper" style="background: {{item.color}}">
+          <text class="card-icon">{{item.icon}}</text>
+        </view>
+        <view class="card-content">
+          <text class="card-title">{{item.name}}</text>
+        </view>
+        <text class="card-arrow">›</text>
+      </view>
+    </view>
+
+    <view class="tips">
+      <text class="tips-icon">ℹ️</text>
+      <text class="tips-text" wx:if="{{isPlace}}">结构化记录帮助你构建完整的地点档案，分享真实体验</text>
+      <text class="tips-text" wx:else>结构化记录帮助构建完整的物品档案，提升二手价值</text>
+    </view>
+  </view>
+</scroll-view>

@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# IDE
+.idea/
+.cursor/
+.vscode/
+
+# 敏感信息 / 本地配置（含数据库密码，勿上传）
+LifeGit-backend/config.py
+
+# 运行时上传数据（保留目录结构，忽略内容）
+LifeGit-backend/uploads/documents/*
+LifeGit-backend/uploads/images/*
+LifeGit-backend/uploads/temp/*
+!LifeGit-backend/uploads/documents/.gitkeep
+!LifeGit-backend/uploads/images/.gitkeep
+!LifeGit-backend/uploads/temp/.gitkeep
+
+# 微信开发者工具私有配置
+project.private.config.json

@@ -1,0 +1,155 @@
+<!--pages/fork-graph/fork-graph.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 头部说明 -->
+    <view class="header-section">
+      <view class="icon-wrapper">
+        <text class="header-icon">🌳</text>
+      </view>
+      <text class="header-title">物品流转链路</text>
+      <text class="header-desc">完整追溯物品的所有权变更历史</text>
+    </view>
+
+    <!-- 当前仓库信息 -->
+    <view class="current-repo-section">
+      <view class="section-header">
+        <text class="section-title">当前物品</text>
+        <view class="current-badge">
+          <text class="badge-text">正在查看</text>
+        </view>
+      </view>
+      <view class="repo-card current">
+        <image class="repo-image" src="{{currentRepo.image}}" mode="aspectFill"></image>
+        <view class="repo-info">
+          <text class="repo-name">{{currentRepo.name}}</text>
+          <text class="repo-details">{{currentRepo.brand}} · {{currentRepo.model}}</text>
+          <view class="repo-meta">
+            <text class="meta-item">主人: {{currentRepo.owner}}</text>
+            <text class="meta-item">事件: {{currentRepo.eventCount}}条</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 流转树状图 -->
+    <view class="tree-section">
+      <view class="section-header">
+        <text class="section-title">流转历史</text>
+        <text class="section-subtitle">共 {{totalNodes}} 个节点</text>
+      </view>
+
+      <view class="tree-container">
+        <!-- 根节点（原始创建者） -->
+        <view class="tree-level root-level">
+          <view class="level-label">
+            <text class="label-text">起点</text>
+            <text class="label-date">{{rootNode.createdAt}}</text>
+          </view>
+          <view class="tree-node root-node">
+            <view class="node-avatar-wrapper">
+              <image class="node-avatar" src="{{rootNode.ownerAvatar}}" mode="aspectFill"></image>
+              <view class="node-badge root-badge">
+                <text class="badge-icon">🌱</text>
+              </view>
+            </view>
+            <view class="node-content">
+              <text class="node-name">{{rootNode.ownerName}}</text>
+              <text class="node-desc">创建物品档案</text>
+              <text class="node-time">{{rootNode.createdAt}}</text>
+            </view>
+            <view class="node-connector"></view>
+          </view>
+        </view>
+
+        <!-- 中间流转节点 -->
+        <view class="tree-level intermediate-level" wx:if="{{intermediateNodes.length > 0}}">
+          <view class="level-label">
+            <text class="label-text">流转</text>
+            <text class="label-count">{{intermediateNodes.length}} 次</text>
+          </view>
+          <view class="nodes-wrapper">
+            <view class="tree-node intermediate-node" wx:for="{{intermediateNodes}}" wx:key="id">
+              <view class="node-connector-top"></view>
+              <view class="node-avatar-wrapper">
+                <image class="node-avatar" src="{{item.ownerAvatar}}" mode="aspectFill"></image>
+                <view class="node-badge transfer-badge">
+                  <text class="badge-icon">🔄</text>
+                </view>
+              </view>
+              <view class="node-content">
+                <text class="node-name">{{item.ownerName}}</text>
+                <text class="node-desc">接收自 {{item.fromOwner}}</text>
+                <text class="node-time">{{item.receivedAt}}</text>
+                <view class="event-summary" wx:if="{{item.eventCount > 0}}">
+                  <text class="event-count">新增 {{item.eventCount}} 条记录</text>
+                </view>
+              </view>
+              <view class="node-connector"></view>
+            </view>
+          </view>
+        </view>
+
+        <!-- 当前节点 -->
+        <view class="tree-level current-level">
+          <view class="level-label">
+            <text class="label-text">当前</text>
+            <text class="label-date">{{currentRepo.updatedAt}}</text>
+          </view>
+          <view class="tree-node current-node">
+            <view class="node-connector-top"></view>
+            <view class="node-avatar-wrapper">
+              <image class="node-avatar" src="{{currentRepo.ownerAvatar}}" mode="aspectFill"></image>
+              <view class="node-badge current-badge">
+                <text class="badge-icon">⭐</text>
+              </view>
+            </view>
+            <view class="node-content">
+              <text class="node-name">{{currentRepo.owner}}</text>
+              <text class="node-desc">当前主人</text>
+              <text class="node-time">{{currentRepo.updatedAt}}</text>
+              <view class="event-summary" wx:if="{{currentRepo.eventCount > 0}}">
+                <text class="event-count">{{currentRepo.eventCount}} 条使用记录</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 统计信息 -->
+    <view class="stats-section">
+      <view class="stat-card">
+        <text class="stat-value">{{totalNodes}}</text>
+        <text class="stat-label">总主人数</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-value">{{totalTransfers}}</text>
+        <text class="stat-label">流转次数</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-value">{{totalEvents}}</text>
+        <text class="stat-label">总记录数</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-value">{{totalDays}}</text>
+        <text class="stat-label">追踪天数</text>
+      </view>
+    </view>
+
+    <!-- 操作提示 -->
+    <view class="tips-section">
+      <view class="tip-item">
+        <text class="tip-icon">💡</text>
+        <text class="tip-text">每个节点都完整继承了之前的历史记录</text>
+      </view>
+      <view class="tip-item">
+        <text class="tip-icon">🔗</text>
+        <text class="tip-text">点击节点可以查看该时期的详细记录</text>
+      </view>
+      <view class="tip-item">
+        <text class="tip-icon">✨</text>
+        <text class="tip-text">物品的所有变更都会被永久记录</text>
+      </view>
+    </view>
+  </view>
+</scroll-view>

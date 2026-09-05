@@ -1,0 +1,134 @@
+<!--pages/transfer-initiate/transfer-initiate.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 头部说明 -->
+    <view class="header-section">
+      <view class="icon-wrapper">
+        <text class="header-icon">🎁</text>
+      </view>
+      <text class="header-title">转让物品</text>
+      <text class="header-desc">生成专属转让链接，完整继承所有历史记录</text>
+    </view>
+
+    <!-- 仓库信息预览 -->
+    <view class="repo-preview">
+      <image class="repo-preview-image" src="{{repoInfo.image}}" mode="aspectFill"></image>
+      <view class="repo-preview-info">
+        <text class="repo-preview-name">{{repoInfo.name}}</text>
+        <text class="repo-preview-details">{{repoInfo.brand}} · {{repoInfo.model}}</text>
+        <view class="event-count-badge">
+          <text class="event-count-text">{{eventCount}} 条记录</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 转让说明 -->
+    <view class="info-section">
+      <view class="info-item">
+        <text class="info-icon">📋</text>
+        <view class="info-content">
+          <text class="info-title">完整继承历史</text>
+          <text class="info-desc">新仓库将自动复制所有时间线事件，保留完整的物品档案</text>
+        </view>
+      </view>
+      <view class="info-item">
+        <text class="info-icon">🔗</text>
+        <view class="info-content">
+          <text class="info-title">建立关联关系</text>
+          <text class="info-desc">自动建立与原仓库的Fork关系，可追溯完整流转链路</text>
+        </view>
+      </view>
+      <view class="info-item">
+        <text class="info-icon">✓</text>
+        <view class="info-content">
+          <text class="info-title">状态更新</text>
+          <text class="info-desc">原仓库状态自动变更为"已转让"，记录转让事件</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 转让链接生成 -->
+    <view class="link-section">
+      <text class="section-title">转让链接</text>
+
+      <!-- 生成中状态 -->
+      <view class="generating-state" wx:if="{{isGenerating}}">
+        <view class="loading-spinner"></view>
+        <text class="generating-text">正在生成专属转让链接...</text>
+      </view>
+
+      <!-- 链接生成完成 -->
+      <view class="link-content" wx:if="{{transferLink && !isGenerating}}">
+        <view class="link-display">
+          <text class="link-text">{{transferLink}}</text>
+          <view class="link-actions">
+            <text class="copy-btn" bindtap="copyLink">复制</text>
+            <text class="share-btn" bindtap="shareLink">分享</text>
+          </view>
+        </view>
+
+        <!-- 二维码展示 -->
+        <view class="qrcode-section">
+          <view class="qrcode-wrapper">
+            <image class="qrcode-image" src="{{qrcodeUrl}}" mode="aspectFit" show-menu-by-longpress></image>
+          </view>
+          <text class="qrcode-hint">扫描二维码直接接收</text>
+        </view>
+      </view>
+
+      <!-- 生成按钮 -->
+      <button class="generate-btn" bindtap="generateTransferLink" wx:if="{{!transferLink}}">
+        <text class="btn-icon">✨</text>
+        <text class="btn-text">生成转让链接</text>
+      </button>
+    </view>
+
+    <!-- 转让设置 -->
+    <view class="settings-section">
+      <text class="section-title">转让设置</text>
+
+      <view class="setting-item">
+        <view class="setting-content">
+          <text class="setting-title">接收人验证</text>
+          <text class="setting-desc">接收前需要确认身份</text>
+        </view>
+        <view class="switch-wrapper {{requireVerification ? 'active' : ''}}" bindtap="toggleVerification">
+          <view class="switch-dot"></view>
+        </view>
+      </view>
+
+      <view class="setting-item">
+        <view class="setting-content">
+          <text class="setting-title">自动创建购入事件</text>
+          <text class="setting-desc">接收后自动生成【购入-二手】事件</text>
+        </view>
+        <view class="switch-wrapper {{autoCreateEvent ? 'active' : ''}}" bindtap="toggleAutoEvent">
+          <view class="switch-dot"></view>
+        </view>
+      </view>
+
+      <view class="setting-item">
+        <view class="setting-content">
+          <text class="setting-title">附言</text>
+          <text class="setting-desc">给新主人的留言（可选）</text>
+        </view>
+      </view>
+
+      <textarea
+        class="message-input"
+        placeholder="写下你对新主人的祝福或使用建议..."
+        value="{{transferMessage}}"
+        bindinput="onMessageInput"
+        maxlength="200"
+        auto-height
+      ></textarea>
+      <text class="char-count">{{transferMessage.length}}/200</text>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="action-btn cancel-btn" bindtap="goBack">返回</button>
+      <button class="action-btn confirm-btn" bindtap="confirmTransfer" disabled="{{!transferLink}}">完成转让</button>
+    </view>
+  </view>
+</scroll-view>

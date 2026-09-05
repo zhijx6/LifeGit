@@ -1,0 +1,125 @@
+<!--index.wxml-->
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+    <!-- 顶部Banner -->
+    <view class="banner-wrapper">
+      <image
+        class="banner-image"
+        src="../../images/welcome.jpg"
+        mode="widthFix"
+        lazy-load="{{true}}"
+        binderror="onImageError"
+      ></image>
+      <!-- 顶部用户信息 -->
+      <view class="header">
+        <block wx:if="{{!hasUserInfo}}">
+          <button class="login-btn" bindtap="goToLogin">登录</button>
+        </block>
+        <block wx:else>
+          <image class="header-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
+        </block>
+      </view>
+    </view>
+
+    <!-- 创建方式选择 -->
+    <view class="create-section">
+      <view class="section-title">创建仓库</view>
+
+      <view class="create-cards-row">
+        <!-- 扫码创建 -->
+        <view class="create-card scan-card" bindtap="scanCreateRepo">
+          <view class="card-icon">
+            <image class="icon-img" src="../../images/scan.png"></image>
+          </view>
+          <view class="card-content">
+            <text class="card-title">扫码创建</text>
+            <text class="card-desc">扫描商品条形码快速创建</text>
+          </view>
+        </view>
+
+        <!-- 手动创建 -->
+        <view class="create-card manual-card" bindtap="showManualCreate">
+          <view class="card-icon">
+            <text class="icon-text">✎</text>
+          </view>
+          <view class="card-content">
+            <text class="card-title">手动创建</text>
+            <text class="card-desc">手动输入商品信息</text>
+          </view>
+        </view>
+
+        <!-- NLP语义创仓 -->
+        <view class="create-card nlp-card" bindtap="goToNLPCreate">
+          <view class="card-icon nlp-icon">
+            <text class="icon-text">✨</text>
+          </view>
+          <view class="card-content">
+            <text class="card-title">智能创仓</text>
+            <text class="card-desc">自然语言描述，AI自动识别</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 手动创建弹窗 -->
+  <view class="modal-overlay" wx:if="{{showModal}}" bindtap="hideModal">
+    <view class="modal-content" catchtap="stopPropagation">
+      <view class="modal-header">
+        <text class="modal-title">手动创建仓库</text>
+        <text class="modal-close" bindtap="hideModal">✕</text>
+      </view>
+      <view class="modal-body">
+        <!-- 类型选择 -->
+        <view class="form-item">
+          <text class="form-label">类型 *</text>
+          <view class="type-selector">
+            <view class="type-option {{formData.type === 'item' ? 'active' : ''}}" bindtap="onTypeSelect" data-type="item">
+              <text class="type-icon">📦</text>
+              <text class="type-text">物品</text>
+            </view>
+            <view class="type-option {{formData.type === 'place' ? 'active' : ''}}" bindtap="onTypeSelect" data-type="place">              <text class="type-icon">📍</text>
+              <text class="type-text">地点</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="form-item">
+          <text class="form-label">{{formData.type === 'place' ? '地点名称' : '商品名称'}} *</text>
+          <input class="form-input" placeholder="{{formData.type === 'place' ? '请输入地点名称' : '请输入商品名称'}}" value="{{formData.name}}" bindinput="onNameInput" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">{{formData.type === 'place' ? '地址' : '品牌'}}</text>
+          <input class="form-input" placeholder="{{formData.type === 'place' ? '请输入详细地址' : '请输入品牌'}}" value="{{formData.brand}}" bindinput="onBrandInput" />
+        </view>
+        <view class="form-item" wx:if="{{formData.type === 'item'}}">
+          <text class="form-label">型号</text>
+          <input class="form-input" placeholder="请输入型号" value="{{formData.model}}" bindinput="onModelInput" />
+        </view>
+        <view class="form-item">
+          <text class="form-label">{{formData.type === 'place' ? '备注' : '规格'}}</text>
+          <input class="form-input" placeholder="{{formData.type === 'place' ? '请输入备注信息' : '请输入规格'}}" value="{{formData.spec}}" bindinput="onSpecInput" />
+        </view>
+
+        <!-- 图片上传 -->
+        <view class="form-item">
+          <text class="form-label">上传图片（可选）</text>
+          <view class="image-grid">
+            <view class="image-item" wx:for="{{formData.images}}" wx:key="*this">
+              <image class="preview-image" src="{{item}}" mode="aspectFill" />
+              <view class="delete-image" bindtap="deleteImage" data-index="{{index}}">✕</view>
+            </view>
+            <view class="add-image-btn" bindtap="chooseImage" wx:if="{{formData.images.length < 9}}">
+              <text class="add-icon">+</text>
+              <text class="add-text">添加图片</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="modal-footer">
+        <button class="modal-btn cancel-btn" bindtap="hideModal">取消</button>
+        <button class="modal-btn confirm-btn" bindtap="confirmCreate">确认创建</button>
+      </view>
+    </view>
+  </view>
+</scroll-view>

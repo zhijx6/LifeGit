@@ -1,0 +1,55 @@
+page { height: 100vh; background: #000; }
+.scrollarea { flex: 1; overflow-y: hidden; }
+.container { padding: 30rpx; }
+
+.event-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 0;
+}
+.event-icon { font-size: 72rpx; margin-bottom: 16rpx; }
+.event-type-name { font-size: 36rpx; font-weight: 700; color: #fff; margin-bottom: 8rpx; }
+.event-time { font-size: 26rpx; color: #888; }
+
+.content-card {
+  background: #111;
+  border: 2rpx solid #333;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-bottom: 40rpx;
+}
+.field-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid #222;
+}
+.field-item:last-child { border-bottom: none; }
+.field-label { font-size: 28rpx; color: #888; flex-shrink: 0; margin-right: 24rpx; }
+.field-value { font-size: 28rpx; color: #fff; text-align: right; word-break: break-all; }
+
+.field-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  padding: 16rpx 0;
+}
+.detail-image {
+  width: 180rpx;
+  height: 180rpx;
+  border-radius: 12rpx;
+}
+
+.danger-zone { padding: 0 30rpx; }
+.delete-btn {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: transparent;
+  color: #ff4d4f;
+  font-size: 28rpx;
+  border: 2rpx solid #ff4d4f;
+  border-radius: 12rpx;
+}
+.delete-btn:active { background: #ff4d4f; color: #fff; }

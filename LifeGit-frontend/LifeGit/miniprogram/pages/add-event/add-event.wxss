@@ -1,0 +1,207 @@
+/**pages/add-event/add-event.wxss**/
+page {
+  height: 100vh;
+  background: linear-gradient(180deg, #f8f9fc 0%, #f0f2f8 100%);
+}
+
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+.container {
+  padding: 0 30rpx 40rpx;
+}
+
+/* 页面头部 */
+.page-header {
+  padding: 50rpx 0 40rpx;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 52rpx;
+  font-weight: 800;
+  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+  margin-bottom: 16rpx;
+  letter-spacing: -1rpx;
+}
+
+.page-subtitle {
+  font-size: 26rpx;
+  color: #8e9aaf;
+  font-weight: 400;
+}
+
+/* 事件类型卡片 */
+.event-types {
+  margin-top: 30rpx;
+}
+
+.event-card {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 32rpx 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(0, 0, 0, 0.02);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.event-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.05) 0%, rgba(51, 51, 51, 0.05) 100%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.event-card:active {
+  transform: scale(0.97);
+  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.08);
+}
+
+.event-card:active::before {
+  opacity: 1;
+}
+
+/* 图标容器 */
+.card-icon-wrapper {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 28rpx;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+}
+
+.card-icon-wrapper.purchase {
+  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+  box-shadow: 0 8rpx 24rpx rgba(26, 26, 26, 0.4);
+}
+
+.card-icon-wrapper.maintenance {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  box-shadow: 0 8rpx 24rpx rgba(240, 147, 251, 0.4);
+}
+
+.card-icon-wrapper.upgrade {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  box-shadow: 0 8rpx 24rpx rgba(79, 172, 254, 0.4);
+}
+
+.card-icon-wrapper.experience {
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  box-shadow: 0 8rpx 24rpx rgba(67, 233, 123, 0.4);
+}
+
+.card-icon-wrapper.fault {
+  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+  box-shadow: 0 8rpx 24rpx rgba(250, 112, 154, 0.4);
+}
+
+.card-icon-wrapper.transfer {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+  box-shadow: 0 8rpx 24rpx rgba(246, 211, 101, 0.4);
+}
+
+.card-icon {
+  font-size: 52rpx;
+  filter: drop-shadow(0 2rpx 4rpx rgba(0, 0, 0, 0.1));
+}
+
+/* 卡片内容 */
+.card-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.card-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 10rpx;
+  letter-spacing: -0.5rpx;
+}
+
+.card-desc {
+  font-size: 24rpx;
+  color: #8e9aaf;
+  margin-bottom: 14rpx;
+  font-weight: 400;
+}
+
+/* 标签组 */
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+}
+
+.tag {
+  font-size: 20rpx;
+  color: #6c757d;
+  background: linear-gradient(135deg, #f8f9fc 0%, #eef1f6 100%);
+  padding: 6rpx 16rpx;
+  border-radius: 8rpx;
+  font-weight: 500;
+  border: 1rpx solid rgba(0, 0, 0, 0.03);
+}
+
+.card-arrow {
+  font-size: 48rpx;
+  color: #d1d5db;
+  font-weight: 200;
+  margin-left: 20rpx;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s;
+}
+
+.event-card:active .card-arrow {
+  transform: translateX(8rpx);
+  color: #1a1a1a;
+}
+
+/* 说明文字 */
+.tips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 50rpx 0;
+  gap: 12rpx;
+}
+
+.tips-icon {
+  font-size: 36rpx;
+}
+
+.tips-text {
+  font-size: 24rpx;
+  color: #8e9aaf;
+  text-align: center;
+  line-height: 38rpx;
+  max-width: 500rpx;
+}

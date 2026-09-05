@@ -1,0 +1,51 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/login/login",
+    "pages/logs/logs",
+    "pages/my/my",
+    "pages/repo-detail/repo-detail",
+    "pages/add-event/add-event",
+    "pages/event-form/event-form",
+    "pages/nlp-input/nlp-input",
+    "pages/nlp-result/nlp-result",
+    "pages/issue-list/issue-list",
+    "pages/issue-detail/issue-detail",
+    "pages/ask-question/ask-question",
+    "pages/transfer-initiate/transfer-initiate",
+    "pages/transfer-receive/transfer-receive",
+    "pages/fork-graph/fork-graph",
+    "pages/change-password/change-password",
+    "pages/mentions/mentions",
+    "pages/event-detail/event-detail"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "LifeGit",
+    "navigationBarBackgroundColor": "#ffffff"
+  },
+  "tabBar": {
+    "selectedColor": "#1a1a1a",
+    "color": "#666666",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "position": "bottom",
+    "list":[
+      {
+        "pagePath": "pages/index/index",
+        "text": "创建仓库",
+        "iconPath": "images/add.png",
+        "selectedIconPath": "images/add_select.png"
+      },
+      {"pagePath": "pages/my/my",
+        "text": "我的仓库",
+        "iconPath": "images/my.png",
+        "selectedIconPath": "images/my_select.png"
+      }
+    ]
+
+  },
+  "style": "v2",
+  "componentFramework": "glass-easel",
+  "lazyCodeLoading": "requiredComponents"
+}

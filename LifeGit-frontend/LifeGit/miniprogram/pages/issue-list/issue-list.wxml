@@ -1,0 +1,91 @@
+<!--pages/issue-list/issue-list.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 头部统计 -->
+    <view class="header-stats">
+      <view class="stat-item">
+        <text class="stat-number">{{stats.total}}</text>
+        <text class="stat-label">总问题</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-number answered">{{stats.answered}}</text>
+        <text class="stat-label">已解答</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-number open">{{stats.open}}</text>
+        <text class="stat-label">待解答</text>
+      </view>
+    </view>
+
+    <!-- 筛选标签 -->
+    <view class="filter-tabs">
+      <view class="filter-tab {{activeFilter === 'all' ? 'active' : ''}}" bindtap="switchFilter" data-filter="all">
+        <text class="tab-text">全部</text>
+      </view>
+      <view class="filter-tab {{activeFilter === 'open' ? 'active' : ''}}" bindtap="switchFilter" data-filter="open">
+        <text class="tab-text">待解答</text>
+      </view>
+      <view class="filter-tab {{activeFilter === 'answered' ? 'active' : ''}}" bindtap="switchFilter" data-filter="answered">
+        <text class="tab-text">已解答</text>
+      </view>
+      <view class="filter-tab {{activeFilter === 'my' ? 'active' : ''}}" bindtap="switchFilter" data-filter="my">
+        <text class="tab-text">我的</text>
+      </view>
+    </view>
+
+    <!-- Issue列表 -->
+    <view class="issues-list">
+      <block wx:if="{{filteredIssues.length > 0}}">
+        <view class="issue-card" wx:for="{{filteredIssues}}" wx:key="id" bindtap="goToDetail" data-id="{{item.id}}">
+          <!-- 状态标签 -->
+          <view class="issue-status">
+            <view class="status-dot {{item.status}}"></view>
+            <text class="status-text">{{item.statusText}}</text>
+          </view>
+
+          <!-- 标题 -->
+          <text class="issue-title">{{item.title}}</text>
+
+          <!-- 内容预览 -->
+          <text class="issue-preview">{{item.content}}</text>
+
+          <!-- 元信息 -->
+          <view class="issue-meta">
+            <view class="meta-left">
+              <image class="user-avatar" src="{{item.author.avatar}}" mode="aspectFill"></image>
+              <text class="author-name">{{item.author.name}}</text>
+              <text class="dot-separator">·</text>
+              <text class="create-time">{{item.createTime}}</text>
+            </view>
+            <view class="meta-right">
+              <view class="answer-info">
+                <text class="answer-icon">💬</text>
+                <text class="answer-count">{{item.answerCount}}</text>
+              </view>
+              <view class="best-answer-badge" wx:if="{{item.hasBestAnswer}}">
+                <text class="best-answer-text">✓</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 空状态 -->
+      <block wx:else>
+        <view class="empty-state">
+          <text class="empty-icon">💭</text>
+          <text class="empty-title">还没有问题</text>
+          <text class="empty-desc">成为第一个提问的人吧</text>
+          <button class="ask-first-btn" bindtap="askQuestion">发起提问</button>
+        </view>
+      </block>
+    </view>
+
+    <!-- 悬浮提问按钮 -->
+    <view class="floating-ask-btn" bindtap="askQuestion">
+      <text class="floating-icon">+</text>
+    </view>
+  </view>
+</scroll-view>

@@ -1,0 +1,200 @@
+<!--pages/issue-detail/issue-detail.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 问题详情 -->
+    <view class="question-section">
+      <view class="question-header">
+        <view class="status-badge {{issue.status}}">
+          <text class="status-text">{{issue.statusText}}</text>
+        </view>
+        <view class="action-buttons" wx:if="{{isOwner}}">
+          <text class="action-btn delete-action" bindtap="deleteIssue">删除问题</text>
+          <text class="action-btn" bindtap="closeIssue" wx:if="{{issue.status !== 'closed'}}">关闭问题</text>
+        </view>
+      </view>
+
+      <text class="question-title">{{issue.title}}</text>
+
+      <view class="question-author">
+        <image class="author-avatar" src="{{issue.author.avatar}}" mode="aspectFill"></image>
+        <view class="author-info">
+          <text class="author-name">{{issue.author.name}}</text>
+          <text class="create-time">{{issue.createTime}}</text>
+        </view>
+      </view>
+
+      <text class="question-content">{{issue.content}}</text>
+
+      <!-- 问题标签 -->
+      <view class="question-tags" wx:if="{{issue.tags.length > 0}}">
+        <text class="tag" wx:for="{{issue.tags}}" wx:key="*this">#{{item}}</text>
+      </view>
+    </view>
+
+    <!-- 最佳答案 -->
+    <view class="best-answer-section" wx:if="{{bestAnswer}}">
+      <view class="best-answer-header">
+        <text class="best-answer-icon">✓</text>
+        <text class="best-answer-title">最佳答案</text>
+        <text class="cancel-best-btn" wx:if="{{canSetBest}}" bindtap="cancelBestAnswer">取消最佳</text>
+      </view>
+      <view class="answer-content">
+        <view class="answer-author">
+          <image class="author-avatar-small" src="{{bestAnswer.author.avatar}}" mode="aspectFill"></image>
+          <text class="author-name">{{bestAnswer.author.name}}</text>
+          <text class="best-badge">已采纳</text>
+        </view>
+        <text class="answer-text">{{bestAnswer.content}}</text>
+
+        <!-- Commit引用展示 -->
+        <view class="commit-refs" wx:if="{{bestAnswer.commitRefs.length > 0}}">
+          <text class="refs-title">引用记录</text>
+          <view class="ref-item" wx:for="{{bestAnswer.commitRefs}}" wx:for-item="commitRef" wx:key="id">
+            <view class="ref-icon-wrapper {{commitRef.type}}">
+              <text class="ref-icon">{{commitRef.icon}}</text>
+            </view>
+            <view class="ref-content">
+              <text class="ref-type">{{commitRef.typeText}}</text>
+              <text class="ref-desc">{{commitRef.description}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="answer-meta">
+          <text class="answer-time">{{bestAnswer.createTime}}</text>
+          <view class="answer-actions">
+            <text class="action-item">👍 {{bestAnswer.likeCount}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 回答列表 -->
+    <view class="answers-section">
+      <text class="section-title">全部回答 ({{answers.length}})</text>
+
+      <block wx:if="{{answers.length > 0}}">
+        <view class="answer-item" wx:for="{{answers}}" wx:key="id">
+          <image class="answer-avatar" src="{{item.author.avatar}}" mode="aspectFill"></image>
+          <view class="answer-content-wrapper">
+            <view class="answer-header">
+              <text class="answer-author-name">{{item.author.name}}</text>
+              <text class="answer-create-time">{{item.createTime}}</text>
+            </view>
+
+            <text class="answer-content">{{item.content}}</text>
+
+            <!-- Commit引用 -->
+            <view class="commit-refs" wx:if="{{item.commitRefs.length > 0}}">
+              <view class="ref-item" wx:for="{{item.commitRefs}}" wx:for-item="commitRef" wx:key="id">
+                <view class="ref-icon-wrapper {{commitRef.type}}">
+                  <text class="ref-icon">{{commitRef.icon}}</text>
+                </view>
+                <view class="ref-content">
+                  <text class="ref-type">{{commitRef.typeText}}</text>
+                  <text class="ref-desc">{{commitRef.description}}</text>
+                </view>
+              </view>
+            </view>
+
+            <view class="answer-footer">
+              <view class="answer-actions">
+                <text class="action-btn" bindtap="likeAnswer" data-id="{{item.id}}">
+                  <text class="action-icon">{{item.isLiked ? '❤️' : '🤍'}}</text>
+                  <text class="action-count">{{item.likeCount}}</text>
+                </text>
+              </view>
+
+              <!-- 设为最佳答案按钮 -->
+              <view class="set-best-btn" wx:if="{{canSetBest && !bestAnswer}}">
+                <text class="set-best-text" bindtap="setBestAnswer" data-id="{{item.id}}">设为最佳答案</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 空状态 -->
+      <block wx:else>
+        <view class="empty-answers">
+          <text class="empty-icon">💬</text>
+          <text class="empty-text">还没有回答</text>
+          <text class="empty-hint">成为第一个回答的人吧</text>
+        </view>
+      </block>
+    </view>
+
+    <!-- 回答输入框 -->
+    <view class="reply-input-section">
+      <view class="input-wrapper">
+        <textarea
+          class="reply-input"
+          placeholder="回答问题，可以@用户或引用记录..."
+          value="{{replyText}}"
+          bindinput="onReplyInput"
+          maxlength="500"
+          auto-height
+          cursor-spacing="20"
+        ></textarea>
+
+        <!-- 工具栏 -->
+        <view class="input-toolbar">
+          <text class="toolbar-btn" bindtap="showAtDialog">@</text>
+          <text class="toolbar-btn" bindtap="showCommitDialog">引用</text>
+          <text class="char-count">{{replyText.length}}/500</text>
+        </view>
+      </view>
+      <button class="submit-btn" bindtap="submitReply" disabled="{{!replyText}}">发送</button>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- @用户选择弹窗 -->
+<view class="modal-overlay" wx:if="{{showAtModal}}" bindtap="hideAtModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">@提醒用户</text>
+      <text class="modal-close" bindtap="hideAtModal">✕</text>
+    </view>
+    <view class="modal-body">
+      <view class="user-list">
+        <view class="user-item {{selectedUser === item.id ? 'active' : ''}}" wx:for="{{availableUsers}}" wx:key="id" bindtap="selectUser" data-id="{{item.id}}">
+          <image class="user-avatar-small" src="{{item.avatar}}" mode="aspectFill"></image>
+          <text class="user-name">{{item.name}}</text>
+          <text class="check-icon">{{selectedUser === item.id ? '✓' : ''}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="modal-footer">
+      <button class="modal-btn confirm-btn" bindtap="confirmAtUser">确定</button>
+    </view>
+  </view>
+</view>
+
+<!-- 引用Commit选择弹窗 -->
+<view class="modal-overlay" wx:if="{{showCommitModal}}" bindtap="hideCommitModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">引用记录</text>
+      <text class="modal-close" bindtap="hideCommitModal">✕</text>
+    </view>
+    <view class="modal-body">
+      <view class="commit-list">
+        <view class="commit-item {{selectedCommit === item.id ? 'active' : ''}}" wx:for="{{availableCommits}}" wx:key="id" bindtap="selectCommit" data-id="{{item.id}}">
+          <view class="commit-icon-wrapper {{item.type}}">
+            <text class="commit-icon">{{item.icon}}</text>
+          </view>
+          <view class="commit-info">
+            <text class="commit-type">{{item.type}}</text>
+            <text class="commit-desc">{{item.description}}</text>
+            <text class="commit-time">{{item.time}}</text>
+          </view>
+          <text class="check-icon">{{selectedCommit === item.id ? '✓' : ''}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="modal-footer">
+      <button class="modal-btn confirm-btn" bindtap="confirmCommitRef">确定</button>
+    </view>
+  </view>
+</view>

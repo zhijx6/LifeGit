@@ -1,0 +1,661 @@
+/**pages/issue-detail/issue-detail.wxss**/
+page {
+  height: 100vh;
+  background: linear-gradient(180deg, #f8f9fc 0%, #f0f2f8 100%);
+}
+
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+.container {
+  padding: 0 30rpx 40rpx;
+}
+
+/* 问题详情 */
+.question-section {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin: 30rpx 0 24rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(0, 0, 0, 0.02);
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.status-badge {
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 22rpx;
+  font-weight: 600;
+}
+
+.status-badge.open {
+  background: linear-gradient(135deg, rgba(67, 233, 123, 0.15) 0%, rgba(56, 249, 215, 0.15) 100%);
+  color: #43e97b;
+  border: 1rpx solid rgba(67, 233, 123, 0.3);
+}
+
+.status-badge.answered {
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.15) 0%, rgba(0, 242, 254, 0.15) 100%);
+  color: #4facfe;
+  border: 1rpx solid rgba(79, 172, 254, 0.3);
+}
+
+.status-badge.closed {
+  background: linear-gradient(135deg, rgba(173, 181, 189, 0.15) 0%, rgba(142, 154, 175, 0.15) 100%);
+  color: #adb5bd;
+  border: 1rpx solid rgba(173, 181, 189, 0.3);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 16rpx;
+}
+
+.action-btn {
+  font-size: 24rpx;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.question-title {
+  font-size: 36rpx;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 20rpx;
+  display: block;
+  line-height: 50rpx;
+}
+
+.question-author {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+.author-avatar {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  margin-right: 16rpx;
+}
+
+.author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.author-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.create-time {
+  font-size: 22rpx;
+  color: #adb5bd;
+}
+
+.question-content {
+  font-size: 28rpx;
+  color: #6c757d;
+  line-height: 44rpx;
+  margin-bottom: 24rpx;
+  display: block;
+}
+
+.question-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.tag {
+  font-size: 22rpx;
+  color: #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  padding: 6rpx 16rpx;
+  border-radius: 12rpx;
+  font-weight: 500;
+}
+
+/* 最佳答案 */
+.best-answer-section {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border-radius: 24rpx;
+  padding: 32rpx;
+  margin-bottom: 24rpx;
+  border: 2rpx solid #667eea;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.15);
+}
+
+.best-answer-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.best-answer-icon {
+  width: 40rpx;
+  height: 40rpx;
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 700;
+  margin-right: 12rpx;
+}
+
+.best-answer-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.answer-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.answer-author {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.author-avatar-small {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+}
+
+.best-badge {
+  font-size: 20rpx;
+  color: #43e97b;
+  background: linear-gradient(135deg, rgba(67, 233, 123, 0.15) 0%, rgba(56, 249, 215, 0.15) 100%);
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-weight: 600;
+  border: 1rpx solid rgba(67, 233, 123, 0.3);
+}
+
+.answer-text {
+  font-size: 28rpx;
+  color: #2c3e50;
+  line-height: 44rpx;
+}
+
+/* Commit引用 */
+.commit-refs {
+  margin-top: 12rpx;
+}
+
+.refs-title {
+  font-size: 24rpx;
+  color: #8e9aaf;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.ref-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx;
+  background: #ffffff;
+  border-radius: 12rpx;
+  margin-bottom: 8rpx;
+  border: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.ref-icon-wrapper {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.ref-icon-wrapper.purchase {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+}
+
+.ref-icon-wrapper.maintenance {
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
+}
+
+.ref-icon-wrapper.fault {
+  background: linear-gradient(135deg, rgba(250, 112, 154, 0.1) 0%, rgba(254, 224, 64, 0.1) 100%);
+}
+
+.ref-icon-wrapper.experience {
+  background: linear-gradient(135deg, rgba(67, 233, 123, 0.1) 0%, rgba(56, 249, 215, 0.1) 100%);
+}
+
+.ref-icon {
+  font-size: 24rpx;
+}
+
+.ref-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.ref-type {
+  font-size: 22rpx;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.ref-desc {
+  font-size: 24rpx;
+  color: #6c757d;
+  line-height: 36rpx;
+}
+
+.answer-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12rpx;
+}
+
+.answer-time {
+  font-size: 22rpx;
+  color: #adb5bd;
+}
+
+.answer-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.action-item {
+  font-size: 24rpx;
+  color: #6c757d;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  font-size: 24rpx;
+  color: #6c757d;
+}
+
+.action-icon {
+  font-size: 26rpx;
+}
+
+.action-count {
+  font-weight: 600;
+}
+
+/* 回答列表 */
+.answers-section {
+  margin-bottom: 24rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 24rpx;
+  display: block;
+}
+
+.answer-item {
+  display: flex;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(0, 0, 0, 0.02);
+}
+
+.answer-avatar {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.answer-content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.answer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.answer-author-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.answer-create-time {
+  font-size: 22rpx;
+  color: #adb5bd;
+}
+
+.answer-content {
+  font-size: 28rpx;
+  color: #2c3e50;
+  line-height: 44rpx;
+}
+
+.answer-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8rpx;
+}
+
+.set-best-btn {
+  padding: 6rpx 16rpx;
+  background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+  border-radius: 12rpx;
+}
+
+.set-best-text {
+  font-size: 22rpx;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* 空状态 */
+.empty-answers {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80rpx 0;
+}
+
+.empty-icon {
+  font-size: 100rpx;
+  margin-bottom: 24rpx;
+  opacity: 0.6;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #6c757d;
+  margin-bottom: 12rpx;
+}
+
+.empty-hint {
+  font-size: 24rpx;
+  color: #adb5bd;
+}
+
+/* 回答输入区 */
+.reply-input-section {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 24rpx;
+}
+
+.input-wrapper {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 20rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(0, 0, 0, 0.02);
+}
+
+.reply-input {
+  width: 100%;
+  min-height: 120rpx;
+  font-size: 28rpx;
+  color: #2c3e50;
+  line-height: 42rpx;
+  border: none;
+}
+
+.input-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #f0f2f8;
+}
+
+.toolbar-btn {
+  font-size: 32rpx;
+  padding: 8rpx 16rpx;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+  border-radius: 12rpx;
+  margin-right: 12rpx;
+}
+
+.char-count {
+  font-size: 22rpx;
+  color: #adb5bd;
+  font-weight: 500;
+}
+
+.submit-btn {
+  width: 120rpx;
+  height: 96rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  border: none;
+  box-shadow: 0 4rpx 16rpx rgba(102, 126, 234, 0.3);
+  align-self: flex-end;
+}
+
+.submit-btn:active {
+  transform: scale(0.95);
+}
+
+.submit-btn[disabled] {
+  opacity: 0.4;
+  background: linear-gradient(135deg, #e8ecf1 0%, #d1d5db 100%);
+  box-shadow: none;
+}
+
+/* 弹窗样式 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 600rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.modal-close {
+  font-size: 36rpx;
+  color: #adb5bd;
+  line-height: 36rpx;
+}
+
+.modal-body {
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+
+.user-list,
+.commit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.user-item,
+.commit-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  background: transparent;
+  border-radius: 16rpx;
+  margin: 0 32rpx;
+  transition: all 0.3s;
+}
+
+.user-item.active,
+.commit-item.active {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+}
+
+.user-avatar-small {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  margin-right: 20rpx;
+}
+
+.user-name,
+.commit-info {
+  flex: 1;
+  font-size: 28rpx;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.commit-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.commit-item {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 32rpx;
+  margin: 0 32rpx;
+}
+
+.commit-icon-wrapper {
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 14rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.commit-icon {
+  font-size: 28rpx;
+}
+
+.commit-type {
+  font-size: 22rpx;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.commit-desc {
+  font-size: 24rpx;
+  color: #6c757d;
+}
+
+.commit-time {
+  font-size: 20rpx;
+  color: #adb5bd;
+}
+
+.check-icon {
+  font-size: 32rpx;
+  color: #43e97b;
+  font-weight: 700;
+}
+
+.modal-footer {
+  padding: 24rpx 32rpx;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.confirm-btn {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+}
+
+.confirm-btn:active {
+  transform: scale(0.98);
+}
+
+.delete-action {
+  color: #ff4d4f !important;
+}
+
+.cancel-best-btn {
+  font-size: 24rpx;
+  color: #ff4d4f;
+  margin-left: auto;
+  padding: 8rpx 20rpx;
+  border: 1rpx solid #ff4d4f;
+  border-radius: 20rpx;
+}
+.cancel-best-btn:active {
+  background: #ff4d4f;
+  color: #fff;
+}

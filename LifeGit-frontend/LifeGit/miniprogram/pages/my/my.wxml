@@ -1,0 +1,94 @@
+<!--pages/my/my.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 用户信息 -->
+    <view class="user-section" wx:if="{{hasLogin}}">
+      <view class="user-info">
+        <view class="user-avatar-wrapper">
+          <text class="user-avatar-text">{{nickname ? nickname[0] : '?'}}</text>
+        </view>
+        <view class="user-detail">
+          <text class="user-nickname">{{nickname || '未设置昵称'}}</text>
+          <text class="user-id">ID: {{userId}}</text>
+        </view>
+      </view>
+      <view class="user-actions">
+        <view class="user-action-btn" bindtap="showEditNickname">
+          <text class="action-label">编辑昵称</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 页面标题 -->
+    <view class="page-header">
+      <text class="page-title">我的仓库</text>
+    </view>
+
+    <!-- 仓库列表 -->
+    <view class="repo-list">
+      <block wx:if="{{repos.length > 0}}">
+        <view class="repo-item" wx:for="{{repos}}" wx:key="id" bindtap="goToRepoDetail" data-id="{{item.id}}">
+          <image class="repo-thumb" src="{{item.image || '/images/product-placeholder.png'}}" mode="aspectFill"></image>
+          <view class="repo-info">
+            <text class="repo-name">{{item.name}}</text>
+            <text class="repo-brand-brand">{{item.brand}} · {{item.model}}</text>
+            <text class="repo-spec">{{item.spec}}</text>
+            <view class="repo-meta">
+              <text class="event-count">{{item.eventCount || 0}} 条记录</text>
+              <text class="create-time">{{item.createTime}}</text>
+            </view>
+          </view>
+          <view class="repo-arrow">
+            <text class="arrow-icon">›</text>
+          </view>
+        </view>
+      </block>
+
+      <!-- 空状态 -->
+      <block wx:else>
+        <view class="empty-state">
+          <text class="empty-icon">📦</text>
+          <text class="empty-text">还没有仓库</text>
+          <text class="empty-hint">点击「创建仓库」添加第一个仓库</text>
+          <button class="go-create-btn" bindtap="goToCreate">去创建</button>
+        </view>
+      </block>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <!-- 设置入口 -->
+    <view class="settings-section">
+      <view class="settings-item" bindtap="goToChangePassword">
+        <text class="settings-icon">🔒</text>
+        <text class="settings-label">修改密码</text>
+        <text class="settings-arrow">›</text>
+      </view>
+      <view class="settings-item" bindtap="logout">
+        <text class="settings-icon">🚪</text>
+        <text class="settings-label">退出登录</text>
+        <text class="settings-arrow">›</text>
+      </view>
+    </view>
+
+    <!-- 编辑昵称弹窗 -->
+    <view class="modal-overlay" wx:if="{{showNicknameModal}}" bindtap="hideEditNickname">
+      <view class="modal-content" catchtap="stopPropagation">
+        <view class="modal-header">
+          <text class="modal-title">编辑昵称</text>
+          <text class="modal-close" bindtap="hideEditNickname">✕</text>
+        </view>
+        <view class="modal-body">
+          <input class="nickname-input" placeholder="请输入新昵称" value="{{newNickname}}" bindinput="onNicknameInput" maxlength="20" />
+        </view>
+        <view class="modal-footer">
+          <button class="modal-btn" bindtap="hideEditNickname">取消</button>
+          <button class="modal-btn confirm-btn" bindtap="saveNickname">保存</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view>

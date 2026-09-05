@@ -1,0 +1,883 @@
+<!--pages/event-form/event-form.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 事件类型标题 -->
+    <view class="event-header event-header-{{eventType}}">
+      <text class="event-icon">{{eventConfig.icon}}</text>
+      <view class="header-text">
+        <text class="event-title">{{eventConfig.title}}</text>
+        <text class="event-subtitle">{{eventConfig.subtitle}}</text>
+      </view>
+    </view>
+
+    <!-- 表单内容 -->
+    <view class="form-container">
+      <!-- 购入事件表单 -->
+      <block wx:if="{{eventType === 'purchase'}}">
+        <!-- 购入时间 -->
+        <view class="form-group">
+          <text class="form-label required">购入时间</text>
+          <picker mode="date" value="{{formData.purchaseDate}}" end="{{today}}" bindchange="onPurchaseDateChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.purchaseDate ? '' : 'placeholder'}}">
+                {{formData.purchaseDate || '请选择购入时间'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 价格 -->
+        <view class="form-group">
+          <text class="form-label required">购入价格</text>
+          <view class="price-input-wrapper">
+            <text class="currency-symbol">¥</text>
+            <input class="price-input" type="digit" placeholder="0.00" value="{{formData.price}}" bindinput="onPriceInput" />
+          </view>
+        </view>
+
+        <!-- 购买渠道 -->
+        <view class="form-group">
+          <text class="form-label">购买渠道</text>
+          <picker mode="selector" range="{{channels}}" value="{{channelIndex}}" bindchange="onChannelChange">
+            <view class="form-picker">
+              <text class="picker-value">{{channels[channelIndex] || '请选择渠道'}}</text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 开箱图片 -->
+        <view class="form-group">
+          <text class="form-label">开箱图片</text>
+          <view class="image-upload-grid">
+            <block wx:for="{{formData.unboxImages}}" wx:key="index">
+              <view class="image-item">
+                <image class="uploaded-image" src="{{item}}" mode="aspectFill"></image>
+                <text class="image-delete" bindtap="deleteUnboxImage" data-index="{{index}}">×</text>
+              </view>
+            </block>
+            <view class="image-upload-btn" bindtap="chooseUnboxImage" wx:if="{{formData.unboxImages.length < 9}}">
+              <text class="upload-icon">+</text>
+              <text class="upload-text">添加图片</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 初始体验 -->
+        <view class="form-group">
+          <text class="form-label">初始体验</text>
+          <textarea class="form-textarea" placeholder="记录你的第一印象和初始体验..." value="{{formData.initialExperience}}" bindinput="onInitialExperienceInput" maxlength="500"></textarea>
+          <text class="char-count">{{formData.initialExperience.length}}/500</text>
+        </view>
+      </block>
+
+      <!-- 维护/维修事件表单 -->
+      <block wx:if="{{eventType === 'maintenance'}}">
+        <!-- 维护时间 -->
+        <view class="form-group">
+          <text class="form-label required">维护时间</text>
+          <picker mode="date" value="{{formData.maintenanceDate}}" end="{{today}}" bindchange="onMaintenanceDateChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.maintenanceDate ? '' : 'placeholder'}}">
+                {{formData.maintenanceDate || '请选择维护时间'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 维护类型 -->
+        <view class="form-group">
+          <text class="form-label required">维护类型</text>
+          <picker mode="selector" range="{{maintenanceTypeOptions}}" value="{{maintenanceTypeIndex}}" bindchange="onMaintenanceTypeChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.maintenanceType ? '' : 'placeholder'}}">
+                {{formData.maintenanceType || '请选择维护类型'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 维护项目 -->
+        <view class="form-group">
+          <text class="form-label required">维护项目</text>
+          <input class="form-input" placeholder="如：更换电池、屏幕贴膜" value="{{formData.maintenanceItem}}" bindinput="onMaintenanceItemInput" />
+        </view>
+
+        <!-- 费用 -->
+        <view class="form-group">
+          <text class="form-label">费用</text>
+          <view class="price-input-wrapper">
+            <text class="currency-symbol">¥</text>
+            <input class="price-input" type="digit" placeholder="0.00" value="{{formData.maintenanceCost}}" bindinput="onMaintenanceCostInput" />
+          </view>
+        </view>
+
+        <!-- 维修点 -->
+        <view class="form-group">
+          <text class="form-label">维修点/服务商</text>
+          <input class="form-input" placeholder="官方售后/第三方维修店" value="{{formData.repairShop}}" bindinput="onRepairShopInput" />
+        </view>
+
+        <!-- 更换零件照片 -->
+        <view class="form-group">
+          <text class="form-label">更换零件照片</text>
+          <view class="image-upload-grid">
+            <block wx:for="{{formData.partImages}}" wx:key="index">
+              <view class="image-item">
+                <image class="uploaded-image" src="{{item}}" mode="aspectFill"></image>
+                <text class="image-delete" bindtap="deletePartImage" data-index="{{index}}">×</text>
+              </view>
+            </block>
+            <view class="image-upload-btn" bindtap="choosePartImage" wx:if="{{formData.partImages.length < 9}}">
+              <text class="upload-icon">+</text>
+              <text class="upload-text">添加图片</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 维修凭证 -->
+        <view class="form-group">
+          <text class="form-label">维修凭证</text>
+          <view class="image-upload-grid">
+            <block wx:for="{{formData.receiptImages}}" wx:key="index">
+              <view class="image-item">
+                <image class="uploaded-image" src="{{item}}" mode="aspectFill"></image>
+                <text class="image-delete" bindtap="deleteReceiptImage" data-index="{{index}}">×</text>
+              </view>
+            </block>
+            <view class="image-upload-btn" bindtap="chooseReceiptImage" wx:if="{{formData.receiptImages.length < 9}}">
+              <text class="upload-icon">+</text>
+              <text class="upload-text">上传凭证</text>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 升级事件表单 -->
+      <block wx:if="{{eventType === 'upgrade'}}">
+        <!-- 升级时间 -->
+        <view class="form-group">
+          <text class="form-label required">升级时间</text>
+          <picker mode="date" value="{{formData.upgradeDate}}" end="{{today}}" bindchange="onUpgradeDateChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.upgradeDate ? '' : 'placeholder'}}">
+                {{formData.upgradeDate || '请选择升级时间'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 升级类型 -->
+        <view class="form-group">
+          <text class="form-label required">升级类型</text>
+          <picker mode="selector" range="{{upgradeTypeOptions}}" value="{{upgradeTypeIndex}}" bindchange="onUpgradeTypeChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.upgradeType ? '' : 'placeholder'}}">
+                {{formData.upgradeType || '请选择升级类型'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 升级项目 -->
+        <view class="form-group">
+          <text class="form-label required">升级项目</text>
+          <input class="form-input" placeholder="如：内存升级 16GB→32GB" value="{{formData.upgradeItem}}" bindinput="onUpgradeItemInput" />
+        </view>
+
+        <!-- 费用 -->
+        <view class="form-group">
+          <text class="form-label">费用</text>
+          <view class="price-input-wrapper">
+            <text class="currency-symbol">¥</text>
+            <input class="price-input" type="digit" placeholder="0.00" value="{{formData.upgradeCost}}" bindinput="onUpgradeCostInput" />
+          </view>
+        </view>
+
+        <!-- 性能提升感受 -->
+        <view class="form-group">
+          <text class="form-label">性能提升感受</text>
+          <textarea class="form-textarea" placeholder="描述升级后的性能变化和使用体验..." value="{{formData.performanceExperience}}" bindinput="onPerformanceExperienceInput" maxlength="500"></textarea>
+          <text class="char-count">{{formData.performanceExperience.length}}/500</text>
+        </view>
+      </block>
+
+      <!-- 使用体验事件表单 -->
+      <block wx:if="{{eventType === 'experience'}}">
+        <!-- 体验时间 -->
+        <view class="form-group">
+          <text class="form-label required">体验时间</text>
+          <picker mode="date" value="{{formData.experienceDate}}" end="{{today}}" bindchange="onExperienceDateChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.experienceDate ? '' : 'placeholder'}}">
+                {{formData.experienceDate || '请选择体验时间'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 评分 -->
+        <view class="form-group">
+          <text class="form-label required">评分</text>
+          <view class="star-rating">
+            <block wx:for="{{[1,2,3,4,5]}}" wx:key="*this">
+              <text class="star-item {{experienceRating >= item ? 'star-active' : ''}}" bindtap="setRating" data-value="{{item}}">{{experienceRating >= item ? '★' : '☆'}}</text>
+            </block>
+          </view>
+        </view>
+
+        <!-- 体验标题 -->
+        <view class="form-group">
+          <text class="form-label required">体验标题</text>
+          <input class="form-input" placeholder="如：带父母出游的体验" value="{{formData.experienceTitle}}" bindinput="onExperienceTitleInput" />
+        </view>
+
+        <!-- 场景描述 -->
+        <view class="form-group">
+          <text class="form-label">场景描述</text>
+          <textarea class="form-textarea" placeholder="描述当时的场景和环境..." value="{{formData.sceneDescription}}" bindinput="onSceneDescriptionInput" maxlength="300"></textarea>
+          <text class="char-count">{{formData.sceneDescription.length}}/300</text>
+        </view>
+
+        <!-- 体验感受 -->
+        <view class="form-group">
+          <text class="form-label">体验感受</text>
+          <textarea class="form-textarea" placeholder="记录当时的心情和感受..." value="{{formData.experienceFeeling}}" bindinput="onExperienceFeelingInput" maxlength="500"></textarea>
+          <text class="char-count">{{formData.experienceFeeling.length}}/500</text>
+        </view>
+
+        <!-- 体验图片 -->
+        <view class="form-group">
+          <text class="form-label">体验图片</text>
+          <view class="image-upload-grid">
+            <block wx:for="{{formData.experienceImages}}" wx:key="index">
+              <view class="image-item">
+                <image class="uploaded-image" src="{{item}}" mode="aspectFill"></image>
+                <text class="image-delete" bindtap="deleteExperienceImage" data-index="{{index}}">×</text>
+              </view>
+            </block>
+            <view class="image-upload-btn" bindtap="chooseExperienceImage" wx:if="{{formData.experienceImages.length < 9}}">
+              <text class="upload-icon">+</text>
+              <text class="upload-text">添加图片</text>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 体验节点事件表单 -->
+      <block wx:if="{{eventType === 'memory'}}">
+        <!-- 体验时间 -->
+        <view class="form-group">
+          <text class="form-label required">体验时间</text>
+          <picker mode="date" value="{{formData.memoryDate}}" end="{{today}}" bindchange="onMemoryDateChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.memoryDate ? '' : 'placeholder'}}">
+                {{formData.memoryDate || '请选择体验时间'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 标题 -->
+        <view class="form-group">
+          <text class="form-label required">标题</text>
+          <input class="form-input" placeholder="如：带父母出游的体验" value="{{formData.memoryTitle}}" bindinput="onMemoryTitleInput" />
+        </view>
+
+        <!-- 体验类型 -->
+        <view class="form-group">
+          <text class="form-label required">体验类型</text>
+          <picker mode="selector" range="{{memoryTypeOptions}}" value="{{memoryTypeIndex}}" bindchange="onMemoryTypeChange">
+            <view class="form-picker">
+              <text class="picker-value {{memoryTypeIndex >= 0 ? '' : 'placeholder'}}">
+                {{memoryTypeOptions[memoryTypeIndex] || '请选择体验类型'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 参与人员 -->
+        <view class="form-group">
+          <text class="form-label">参与人员</text>
+          <input class="form-input" placeholder="如：家人、朋友" value="{{formData.participants}}" bindinput="onParticipantsInput" />
+        </view>
+
+        <!-- 体验地点 -->
+        <view class="form-group">
+          <text class="form-label">体验地点</text>
+          <input class="form-input" placeholder="请输入体验地点" value="{{formData.location}}" bindinput="onLocationInput" />
+        </view>
+
+        <!-- 情感评分 -->
+        <view class="form-group">
+          <text class="form-label">情感评分</text>
+          <view class="star-rating">
+            <block wx:for="{{[1,2,3,4,5]}}" wx:key="*this">
+              <text class="star-item {{emotionalRating >= item ? 'star-active' : ''}}" bindtap="setEmotionalRating" data-value="{{item}}">{{emotionalRating >= item ? '★' : '☆'}}</text>
+            </block>
+            <text class="rating-label" wx:if="{{emotionalRating}}">{{emotionalRating}}分</text>
+          </view>
+        </view>
+
+        <!-- 关键词 -->
+        <view class="form-group">
+          <text class="form-label">关键词</text>
+          <input class="form-input" placeholder="多个关键词用逗号分隔" value="{{formData.keywords}}" bindinput="onKeywordsInput" />
+        </view>
+
+        <!-- 故事背景 -->
+        <view class="form-group">
+          <text class="form-label">故事背景</text>
+          <textarea class="form-textarea" placeholder="描述这次体验的背景..." value="{{formData.storyBackground}}" bindinput="onStoryBackgroundInput" maxlength="500"></textarea>
+          <text class="char-count">{{formData.storyBackground.length}}/500</text>
+        </view>
+
+        <!-- 情感体验 -->
+        <view class="form-group">
+          <text class="form-label">情感体验</text>
+          <textarea class="form-textarea" placeholder="记录当时的感受和体验..." value="{{formData.emotionalExperience}}" bindinput="onEmotionalExperienceInput" maxlength="1500"></textarea>
+          <text class="char-count">{{formData.emotionalExperience.length}}/1500</text>
+        </view>
+
+        <!-- 收获与感悟 -->
+        <view class="form-group">
+          <text class="form-label">收获与感悟</text>
+          <textarea class="form-textarea" placeholder="记录这次体验的收获..." value="{{formData.learnings}}" bindinput="onLearningsInput" maxlength="1000"></textarea>
+          <text class="char-count">{{formData.learnings.length}}/1000</text>
+        </view>
+
+        <!-- 回忆照片 -->
+        <view class="form-group">
+          <text class="form-label">回忆照片</text>
+          <view class="image-upload-grid">
+            <block wx:for="{{formData.memoryImages}}" wx:key="index">
+              <view class="image-item">
+                <image class="uploaded-image" src="{{item}}" mode="aspectFill"></image>
+                <text class="image-delete" bindtap="deleteMemoryImage" data-index="{{index}}">×</text>
+              </view>
+            </block>
+            <view class="image-upload-btn" bindtap="chooseMemoryImage" wx:if="{{formData.memoryImages.length < 12}}">
+              <text class="upload-icon">+</text>
+              <text class="upload-text">添加照片</text>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 故障/缺陷事件表单 -->
+      <block wx:if="{{eventType === 'fault'}}">
+        <!-- 发生时间 -->
+        <view class="form-group">
+          <text class="form-label required">发生时间</text>
+          <picker mode="date" value="{{formData.faultDate}}" end="{{today}}" bindchange="onFaultDateChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.faultDate ? '' : 'placeholder'}}">
+                {{formData.faultDate || '请选择发生时间'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 故障类型 -->
+        <view class="form-group">
+          <text class="form-label required">故障类型</text>
+          <picker mode="selector" range="{{faultTypeOptions}}" value="{{faultTypeIndex}}" bindchange="onFaultTypeChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.faultType ? '' : 'placeholder'}}">
+                {{formData.faultType || '请选择故障类型'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 故障现象 -->
+        <view class="form-group">
+          <text class="form-label required">故障现象</text>
+          <textarea class="form-textarea" placeholder="详细描述故障现象和问题..." value="{{formData.faultPhenomenon}}" bindinput="onFaultPhenomenonInput" maxlength="500"></textarea>
+          <text class="char-count">{{formData.faultPhenomenon.length}}/500</text>
+        </view>
+
+        <!-- 发生频率 -->
+        <view class="form-group">
+          <text class="form-label">发生频率</text>
+          <view class="radio-group">
+            <view class="radio-item {{formData.faultFrequency === 'first' ? 'active' : ''}}" bindtap="onFaultFrequencyChange" data-value="first">
+              <text class="radio-icon">{{formData.faultFrequency === 'first' ? '○' : '○'}}</text>
+              <text class="radio-label">首次</text>
+            </view>
+            <view class="radio-item {{formData.faultFrequency === 'occasional' ? 'active' : ''}}" bindtap="onFaultFrequencyChange" data-value="occasional">
+              <text class="radio-icon">{{formData.faultFrequency === 'occasional' ? '◉' : '○'}}</text>
+              <text class="radio-label">偶尔</text>
+            </view>
+            <view class="radio-item {{formData.faultFrequency === 'frequent' ? 'active' : ''}}" bindtap="onFaultFrequencyChange" data-value="frequent">
+              <text class="radio-icon">{{formData.faultFrequency === 'frequent' ? '◉' : '○'}}</text>
+              <text class="radio-label">频繁</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 是否解决 -->
+        <view class="form-group">
+          <text class="form-label">是否已解决</text>
+          <view class="radio-group">
+            <view class="radio-item {{formData.isResolved === 'yes' ? 'active' : ''}}" bindtap="onIsResolvedChange" data-value="yes">
+              <text class="radio-icon">{{formData.isResolved === 'yes' ? '◉' : '○'}}</text>
+              <text class="radio-label">是</text>
+            </view>
+            <view class="radio-item {{formData.isResolved === 'no' ? 'active' : ''}}" bindtap="onIsResolvedChange" data-value="no">
+              <text class="radio-icon">{{formData.isResolved === 'no' ? '◉' : '○'}}</text>
+              <text class="radio-label">否</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 官方回应 -->
+        <view class="form-group">
+          <text class="form-label">官方回应</text>
+          <textarea class="form-textarea" placeholder="记录客服或售后反馈..." value="{{formData.officialResponse}}" bindinput="onOfficialResponseInput" maxlength="500"></textarea>
+          <text class="char-count">{{formData.officialResponse.length}}/500</text>
+        </view>
+      </block>
+
+      <!-- 转让/出售事件表单 -->
+      <block wx:if="{{eventType === 'transfer'}}">
+        <!-- 仓库信息预览 -->
+        <view class="transfer-repo-preview" wx:if="{{repoInfo.name}}">
+          <image class="transfer-repo-image" src="{{repoInfo.image || '/images/product-placeholder.png'}}" mode="aspectFill"></image>
+          <view class="transfer-repo-info">
+            <text class="transfer-repo-name">{{repoInfo.name}}</text>
+            <text class="transfer-repo-detail">{{repoInfo.brand}} · {{repoInfo.model}}</text>
+          </view>
+        </view>
+
+        <!-- 转让说明 -->
+        <view class="transfer-info-tips">
+          <view class="transfer-tip-item">
+            <text class="transfer-tip-icon">📋</text>
+            <text class="transfer-tip-text">新仓库将自动复制所有时间线事件，保留完整的物品档案</text>
+          </view>
+          <view class="transfer-tip-item">
+            <text class="transfer-tip-icon">🔗</text>
+            <text class="transfer-tip-text">自动建立Fork关系，可追溯完整流转链路</text>
+          </view>
+        </view>
+
+        <!-- 转让时间 -->
+        <view class="form-group">
+          <text class="form-label required">转让时间</text>
+          <picker mode="date" value="{{formData.transferDate}}" end="{{today}}" bindchange="onTransferDateChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.transferDate ? '' : 'placeholder'}}">
+                {{formData.transferDate || '请选择转让时间'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 转让类型 -->
+        <view class="form-group">
+          <text class="form-label required">转让类型</text>
+          <picker mode="selector" range="{{transferTypeOptions}}" value="{{transferTypeIndex}}" bindchange="onTransferTypeChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.transferType ? '' : 'placeholder'}}">
+                {{formData.transferType || '请选择转让类型'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 转让价格 -->
+        <view class="form-group">
+          <text class="form-label required">转让价格</text>
+          <view class="price-input-wrapper">
+            <text class="currency-symbol">¥</text>
+            <input class="price-input" type="digit" placeholder="0.00" value="{{formData.transferPrice}}" bindinput="onTransferPriceInput" />
+          </view>
+          <text class="form-hint">记录转让价格，方便后续评估保值率</text>
+        </view>
+
+        <!-- 物品状态 -->
+        <view class="form-group">
+          <text class="form-label required">物品状态</text>
+          <picker mode="selector" range="{{conditionOptions}}" value="{{conditionIndex}}" bindchange="onConditionChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.transferCondition ? '' : 'placeholder'}}">
+                {{formData.transferCondition || '请选择物品状态'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 配件情况 -->
+        <view class="form-group">
+          <text class="form-label">配件情况</text>
+          <input class="form-input" placeholder="如：原装充电器、数据线、说明书、包装盒" value="{{formData.transferAccessories}}" bindinput="onTransferAccessoriesInput" />
+        </view>
+
+        <!-- 转让原因 -->
+        <view class="form-group">
+          <text class="form-label">转让原因</text>
+          <textarea class="form-textarea" placeholder="如实记录转让原因..." value="{{formData.transferReason}}" bindinput="onTransferReasonInput" maxlength="300"></textarea>
+          <text class="char-count">{{formData.transferReason.length}}/300</text>
+        </view>
+
+        <!-- 转让渠道 -->
+        <view class="form-group">
+          <text class="form-label">转让渠道</text>
+          <picker mode="selector" range="{{transferChannelOptions}}" value="{{transferChannelIndex}}" bindchange="onTransferChannelChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.transferChannel ? '' : 'placeholder'}}">
+                {{formData.transferChannel || '请选择转让渠道'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 给下一位主人的寄语 -->
+        <view class="form-group">
+          <text class="form-label">对下一个主人的寄语</text>
+          <textarea class="form-textarea" placeholder="分享使用心得、注意事项或美好祝愿..." value="{{formData.transferMessage}}" bindinput="onTransferMessageInput" maxlength="500"></textarea>
+          <text class="char-count">{{formData.transferMessage.length}}/500</text>
+        </view>
+
+        <!-- 使用建议 -->
+        <view class="form-group">
+          <text class="form-label">使用建议</text>
+          <textarea class="form-textarea" placeholder="分享使用技巧、注意事项等..." value="{{formData.transferTips}}" bindinput="onTransferTipsInput" maxlength="500"></textarea>
+          <text class="char-count">{{formData.transferTips.length}}/500</text>
+        </view>
+
+        <!-- 物品照片 -->
+        <view class="form-group">
+          <text class="form-label">物品照片</text>
+          <view class="image-upload-grid">
+            <block wx:for="{{formData.transferImages}}" wx:key="index">
+              <view class="image-item">
+                <image class="uploaded-image" src="{{item}}" mode="aspectFill"></image>
+                <text class="image-delete" bindtap="deleteTransferImage" data-index="{{index}}">×</text>
+              </view>
+            </block>
+            <view class="image-upload-btn" bindtap="chooseTransferImage" wx:if="{{formData.transferImages.length < 9}}">
+              <text class="upload-icon">+</text>
+              <text class="upload-text">添加照片</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 转让凭证 -->
+        <view class="form-group">
+          <text class="form-label">转让凭证</text>
+          <view class="image-upload-grid">
+            <block wx:for="{{formData.transferReceiptImages}}" wx:key="index">
+              <view class="image-item">
+                <image class="uploaded-image" src="{{item}}" mode="aspectFill"></image>
+                <text class="image-delete" bindtap="deleteTransferReceiptImage" data-index="{{index}}">×</text>
+              </view>
+            </block>
+            <view class="image-upload-btn" bindtap="chooseTransferReceiptImage" wx:if="{{formData.transferReceiptImages.length < 9}}">
+              <text class="upload-icon">+</text>
+              <text class="upload-text">上传凭证</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 转让链接区域（保存后显示） -->
+        <view class="transfer-link-section" wx:if="{{transferLink}}">
+          <text class="transfer-section-title">转让链接</text>
+          <view class="transfer-link-display">
+            <text class="transfer-link-text">{{transferLink}}</text>
+            <text class="transfer-copy-btn" bindtap="copyLink">复制</text>
+          </view>
+          <view class="transfer-qrcode" wx:if="{{qrcodeUrl}}">
+            <image class="qrcode-image" src="{{qrcodeUrl}}" mode="aspectFit" show-menu-by-longpress></image>
+            <text class="qrcode-hint">扫描二维码直接接收</text>
+          </view>
+        </view>
+
+        <!-- 转让设置 -->
+        <view class="transfer-settings">
+          <text class="transfer-section-title">转让设置</text>
+          <view class="transfer-setting-item">
+            <view class="setting-content">
+              <text class="setting-title">接收人验证</text>
+              <text class="setting-desc">接收前需要确认身份</text>
+            </view>
+            <view class="switch-wrapper {{requireVerification ? 'active' : ''}}" bindtap="toggleVerification">
+              <view class="switch-dot"></view>
+            </view>
+          </view>
+          <view class="transfer-setting-item">
+            <view class="setting-content">
+              <text class="setting-title">自动创建购入事件</text>
+              <text class="setting-desc">接收后自动生成购入-二手事件</text>
+            </view>
+            <view class="switch-wrapper {{autoCreateEvent ? 'active' : ''}}" bindtap="toggleAutoEvent">
+              <view class="switch-dot"></view>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- ===== 地点型事件表单 ===== -->
+
+      <!-- 到访打卡 -->
+      <block wx:if="{{eventType === 'visit'}}">
+        <!-- 到访日期 -->
+        <view class="form-group">
+          <text class="form-label required">到访日期</text>
+          <picker mode="date" value="{{formData.visitDate}}" end="{{today}}" bindchange="onVisitDateChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.visitDate ? '' : 'placeholder'}}">
+                {{formData.visitDate || '请选择到访日期'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 等位时间 -->
+        <view class="form-group">
+          <text class="form-label">等位时间</text>
+          <picker mode="selector" range="{{waitTimeOptions}}" value="{{waitTimeIndex}}" bindchange="onWaitTimeChange">
+            <view class="form-picker">
+              <text class="picker-value {{waitTimeIndex >= 0 ? '' : 'placeholder'}}">
+                {{waitTimeOptions[waitTimeIndex] || '请选择等位时间'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 实付金额 -->
+        <view class="form-group">
+          <text class="form-label">实付金额</text>
+          <view class="price-input-wrapper">
+            <text class="currency-symbol">¥</text>
+            <input class="price-input" type="digit" placeholder="0.00" value="{{formData.amountPaid}}" bindinput="onAmountPaidInput" />
+          </view>
+        </view>
+
+        <!-- 现场照片 -->
+        <view class="form-group">
+          <text class="form-label">现场照片</text>
+          <view class="image-upload-grid">
+            <block wx:for="{{formData.visitPhotos}}" wx:key="index">
+              <view class="image-item">
+                <image class="uploaded-image" src="{{item}}" mode="aspectFill"></image>
+                <text class="image-delete" bindtap="deleteVisitPhoto" data-index="{{index}}">×</text>
+              </view>
+            </block>
+            <view class="image-upload-btn" bindtap="chooseVisitPhoto" wx:if="{{formData.visitPhotos.length < 9}}">
+              <text class="upload-icon">+</text>
+              <text class="upload-text">添加照片</text>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 菜品/体验评价 -->
+      <block wx:if="{{eventType === 'review'}}">
+        <!-- 总体评价 -->
+        <view class="form-group">
+          <text class="form-label required">总体评价</text>
+          <view class="radio-group">
+            <view class="radio-item {{overallRatingIndex === 0 ? 'active' : ''}}" bindtap="onOverallRatingTap" data-index="0">
+              <text class="radio-icon">👍</text>
+              <text class="radio-label">推荐</text>
+            </view>
+            <view class="radio-item {{overallRatingIndex === 1 ? 'active' : ''}}" bindtap="onOverallRatingTap" data-index="1">
+              <text class="radio-icon">👌</text>
+              <text class="radio-label">一般</text>
+            </view>
+            <view class="radio-item {{overallRatingIndex === 2 ? 'active' : ''}}" bindtap="onOverallRatingTap" data-index="2">
+              <text class="radio-icon">👎</text>
+              <text class="radio-label">不推荐</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 口味评分 -->
+        <view class="form-group">
+          <text class="form-label required">口味</text>
+          <view class="star-rating">
+            <block wx:for="{{[1,2,3,4,5]}}" wx:key="*this">
+              <text class="star-item {{tasteRating >= item ? 'star-active' : ''}}" bindtap="setTasteRating" data-value="{{item}}">{{tasteRating >= item ? '★' : '☆'}}</text>
+            </block>
+            <text class="rating-label" wx:if="{{tasteRating}}">{{tasteRating}}分</text>
+          </view>
+        </view>
+
+        <!-- 环境评分 -->
+        <view class="form-group">
+          <text class="form-label required">环境</text>
+          <view class="star-rating">
+            <block wx:for="{{[1,2,3,4,5]}}" wx:key="*this">
+              <text class="star-item {{environmentRating >= item ? 'star-active' : ''}}" bindtap="setEnvironmentRating" data-value="{{item}}">{{environmentRating >= item ? '★' : '☆'}}</text>
+            </block>
+            <text class="rating-label" wx:if="{{environmentRating}}">{{environmentRating}}分</text>
+          </view>
+        </view>
+
+        <!-- 服务评分 -->
+        <view class="form-group">
+          <text class="form-label required">服务</text>
+          <view class="star-rating">
+            <block wx:for="{{[1,2,3,4,5]}}" wx:key="*this">
+              <text class="star-item {{serviceRating >= item ? 'star-active' : ''}}" bindtap="setServiceRating" data-value="{{item}}">{{serviceRating >= item ? '★' : '☆'}}</text>
+            </block>
+            <text class="rating-label" wx:if="{{serviceRating}}">{{serviceRating}}分</text>
+          </view>
+        </view>
+
+        <!-- 人均消费 -->
+        <view class="form-group">
+          <text class="form-label">人均消费</text>
+          <view class="price-input-wrapper">
+            <text class="currency-symbol">¥</text>
+            <input class="price-input" type="digit" placeholder="0" value="{{formData.perCapitaCost}}" bindinput="onPerCapitaCostInput" />
+          </view>
+        </view>
+
+        <!-- 推荐菜品 -->
+        <view class="form-group">
+          <text class="form-label">推荐菜品</text>
+          <input class="form-input" placeholder="多个菜品用逗号分隔，如：毛血旺,杨枝甘露" value="{{formData.recommendedDishes}}" bindinput="onRecommendedDishesInput" />
+        </view>
+
+        <!-- 踩雷菜品 -->
+        <view class="form-group">
+          <text class="form-label">踩雷菜品</text>
+          <input class="form-input" placeholder="多个菜品用逗号分隔" value="{{formData.dislikedDishes}}" bindinput="onDislikedDishesInput" />
+        </view>
+
+        <!-- 详细评价 -->
+        <view class="form-group">
+          <text class="form-label">详细评价</text>
+          <textarea class="form-textarea" placeholder="分享你的用餐体验..." value="{{formData.detailReview}}" bindinput="onDetailReviewInput" maxlength="1500"></textarea>
+          <text class="char-count">{{formData.detailReview.length}}/1500</text>
+        </view>
+
+        <!-- 评价图片 -->
+        <view class="form-group">
+          <text class="form-label">评价图片</text>
+          <view class="image-upload-grid">
+            <block wx:for="{{formData.reviewImages}}" wx:key="index">
+              <view class="image-item">
+                <image class="uploaded-image" src="{{item}}" mode="aspectFill"></image>
+                <text class="image-delete" bindtap="deleteReviewImage" data-index="{{index}}">×</text>
+              </view>
+            </block>
+            <view class="image-upload-btn" bindtap="chooseReviewImage" wx:if="{{formData.reviewImages.length < 9}}">
+              <text class="upload-icon">+</text>
+              <text class="upload-text">添加图片</text>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 信息变更 -->
+      <block wx:if="{{eventType === 'info_change'}}">
+        <!-- 变更类型 -->
+        <view class="form-group">
+          <text class="form-label required">变更类型</text>
+          <picker mode="selector" range="{{changeTypeOptions}}" value="{{changeTypeIndex}}" bindchange="onChangeTypeChange">
+            <view class="form-picker">
+              <text class="picker-value {{changeTypeIndex >= 0 ? '' : 'placeholder'}}">
+                {{changeTypeOptions[changeTypeIndex] || '请选择变更类型'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 变更描述 -->
+        <view class="form-group">
+          <text class="form-label required">变更描述</text>
+          <textarea class="form-textarea" placeholder="详细描述变更内容..." value="{{formData.changeDescription}}" bindinput="onChangeDescriptionInput" maxlength="1000"></textarea>
+          <text class="char-count">{{formData.changeDescription.length}}/1000</text>
+        </view>
+
+        <!-- 凭证图片 -->
+        <view class="form-group">
+          <text class="form-label">凭证图片</text>
+          <view class="image-upload-grid">
+            <block wx:for="{{formData.evidenceImages}}" wx:key="index">
+              <view class="image-item">
+                <image class="uploaded-image" src="{{item}}" mode="aspectFill"></image>
+                <text class="image-delete" bindtap="deleteEvidenceImage" data-index="{{index}}">×</text>
+              </view>
+            </block>
+            <view class="image-upload-btn" bindtap="chooseEvidenceImage" wx:if="{{formData.evidenceImages.length < 9}}">
+              <text class="upload-icon">+</text>
+              <text class="upload-text">添加图片</text>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- 待探/种草 -->
+      <block wx:if="{{eventType === 'wishlist'}}">
+        <!-- 想去的理由 -->
+        <view class="form-group">
+          <text class="form-label required">想去的理由</text>
+          <textarea class="form-textarea" placeholder="为什么想去这个地方..." value="{{formData.reason}}" bindinput="onReasonInput" maxlength="500"></textarea>
+          <text class="char-count">{{formData.reason.length}}/500</text>
+        </view>
+
+        <!-- 信息来源 -->
+        <view class="form-group">
+          <text class="form-label required">信息来源</text>
+          <picker mode="selector" range="{{sourceOptions}}" value="{{sourceIndex}}" bindchange="onSourceChange">
+            <view class="form-picker">
+              <text class="picker-value {{sourceIndex >= 0 ? '' : 'placeholder'}}">
+                {{sourceOptions[sourceIndex] || '请选择信息来源'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 计划到访日期 -->
+        <view class="form-group">
+          <text class="form-label">计划到访日期</text>
+          <picker mode="date" value="{{formData.plannedDate}}" start="{{today}}" bindchange="onPlannedDateChange">
+            <view class="form-picker">
+              <text class="picker-value {{formData.plannedDate ? '' : 'placeholder'}}">
+                {{formData.plannedDate || '请选择计划日期'}}
+              </text>
+              <text class="picker-arrow">›</text>
+            </view>
+          </picker>
+        </view>
+      </block>
+    </view>
+
+    <!-- 底部按钮 -->
+    <view class="footer-buttons">
+      <button class="footer-btn cancel-btn" bindtap="onCancel">取消</button>
+      <block wx:if="{{eventType === 'transfer' && !transferLink}}">
+        <button class="footer-btn submit-btn" bindtap="onSubmit">保存并生成转让链接</button>
+      </block>
+      <block wx:elif="{{eventType === 'transfer' && transferLink}}">
+        <button class="footer-btn submit-btn" bindtap="onSubmit">完成转让</button>
+      </block>
+      <block wx:else>
+        <button class="footer-btn submit-btn" bindtap="onSubmit">保存</button>
+      </block>
+    </view>
+  </view>
+</scroll-view>

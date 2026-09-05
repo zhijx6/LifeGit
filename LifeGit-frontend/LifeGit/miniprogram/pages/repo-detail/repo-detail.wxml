@@ -1,0 +1,162 @@
+<!--repo-detail.wxml-->
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+    <!-- 顶部Banner -->
+    <view class="banner-wrapper">
+      <image
+        class="banner-image"
+        src="../../images/image.jpg"
+        mode="widthFix"
+        lazy-load="{{true}}"
+      ></image>
+    </view>
+
+    <!-- 仓库基本信息 -->
+    <view class="repo-info">
+      <image class="repo-image" src="{{repoInfo.image}}" wx:if="{{repoInfo.image}}"></image>
+      <view class="repo-details">
+        <text class="repo-name">{{repoInfo.name}}</text>
+        <text class="repo-brand">{{repoInfo.brand}}</text>
+        <text class="repo-model">{{repoInfo.model}}</text>
+        <text class="repo-spec">{{repoInfo.spec}}</text>
+      </view>
+      <view class="delete-repo-btn" bindtap="deleteRepo">
+        <text class="delete-text">删除仓库</text>
+      </view>
+    </view>
+
+    <!-- Fork/转让入口 -->
+    <view class="fork-entry-section" wx:if="{{!isTransferred}}">
+      <view class="fork-header">
+        <view class="header-left">
+          <text class="section-title">🔄 物品流转</text>
+          <text class="fork-desc">转让给新主人，完整继承历史记录</text>
+        </view>
+      </view>
+
+      <view class="fork-actions">
+        <view class="fork-option-card" bindtap="initiateTransfer">
+          <view class="fork-icon-wrapper">
+            <text class="fork-icon">🎁</text>
+          </view>
+          <view class="fork-content">
+            <text class="fork-title">转让物品</text>
+            <text class="fork-subtitle">生成专属转让链接</text>
+          </view>
+          <text class="fork-arrow">›</text>
+        </view>
+      </view>
+
+      <!-- Fork关系图预览 -->
+      <view class="fork-graph-preview" wx:if="{{hasForkRelations}}">
+        <view class="graph-header">
+          <text class="graph-title">🌳 流转关系</text>
+          <text class="graph-count">{{forkCount}} 次流转</text>
+        </view>
+        <view class="graph-preview" bindtap="showForkGraph">
+          <view class="graph-nodes">
+            <view class="graph-node current" wx:if="{{isOriginalOwner}}">
+              <text class="node-text">当前仓库</text>
+            </view>
+            <view class="graph-branches">
+              <view class="branch-item" wx:for="{{forkRelations}}" wx:key="id">
+                <text class="branch-text">→ {{item.owner}}</text>
+              </view>
+            </view>
+          </view>
+          <text class="view-full-graph">查看完整关系图 ›</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 已转让状态 -->
+    <view class="transferred-section" wx:if="{{isTransferred}}">
+      <view class="transferred-banner">
+        <text class="transferred-icon">✓</text>
+        <view class="transferred-content">
+          <text class="transferred-title">物品已转让</text>
+          <text class="transferred-desc">此物品已流转给新主人</text>
+        </view>
+      </view>
+
+      <view class="transferred-info">
+        <text class="info-label">转让时间</text>
+        <text class="info-value">{{transferredTime}}</text>
+      </view>
+      <view class="transferred-info">
+        <text class="info-label">新主人</text>
+        <text class="info-value">{{newOwner}}</text>
+      </view>
+    </view>
+
+    <!-- Issue入口 -->
+    <view class="issue-entry-section">
+      <view class="issue-header">
+        <view class="header-left">
+          <text class="section-title">💬 问答社区</text>
+          <text class="issue-count">{{issueCount}} 个问题</text>
+        </view>
+        <view class="header-actions">
+          <text class="mention-btn" bindtap="goToMentions">@提醒</text>
+          <text class="view-all-btn" bindtap="goToIssues">查看全部</text>
+          <text class="ask-btn" bindtap="askQuestion">+ 提问</text>
+        </view>
+      </view>
+
+      <!-- 热门问题预览 -->
+      <view class="hot-issues" wx:if="{{hotIssues.length > 0}}">
+        <view class="issue-preview" wx:for="{{hotIssues}}" wx:key="id" bindtap="goToIssueDetail" data-id="{{item.id}}">
+          <view class="issue-status-wrapper">
+            <view class="status-dot {{item.status}}"></view>
+          </view>
+          <view class="issue-preview-content">
+            <text class="issue-preview-title">{{item.title}}</text>
+            <view class="issue-preview-meta">
+              <text class="answer-count">{{item.answerCount}} 回答</text>
+              <text class="issue-time">{{item.time}}</text>
+            </view>
+          </view>
+          <view class="issue-preview-badge" wx:if="{{item.hasBestAnswer}}">
+            <text class="badge-text">✓ 已解决</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-issues" wx:else>
+        <text class="empty-icon">💭</text>
+        <text class="empty-text">还没有人提问</text>
+        <text class="empty-hint">成为第一个提问的人吧</text>
+      </view>
+    </view>
+
+    <!-- 事件时间线 -->
+    <view class="events-section">
+      <view class="section-header">
+        <text class="section-title">事件记录</text>
+        <text class="add-event-btn" bindtap="addEvent">+ 添加</text>
+      </view>
+      <view class="timeline">
+        <block wx:for="{{events}}" wx:key="id">
+          <view class="timeline-item">
+            <view class="timeline-dot"></view>
+            <view class="timeline-line" wx:if="{{index < events.length - 1}}"></view>
+            <view class="timeline-content" bindtap="goToEventDetail" data-id="{{item.id}}" data-repo-id="{{repoId}}">
+              <view class="event-header-row">
+                <text class="event-time">{{item.time}}</text>
+                <text class="event-delete" bindtap="deleteEvent" data-id="{{item.id}}">×</text>
+              </view>
+              <text class="event-type">{{item.type}}</text>
+              <text class="event-description">{{item.description}}</text>
+            </view>
+          </view>
+        </block>
+        <block wx:if="{{events.length === 0}}">
+          <view class="empty-events">
+            <text>暂无事件记录</text>
+          </view>
+        </block>
+      </view>
+    </view>
+  </view>
+</scroll-view>

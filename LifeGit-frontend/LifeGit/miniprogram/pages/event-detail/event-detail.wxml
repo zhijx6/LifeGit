@@ -1,0 +1,25 @@
+<scroll-view class="scrollarea" scroll-y>
+  <view class="container">
+    <view class="event-header">
+      <text class="event-icon">{{eventIcon}}</text>
+      <text class="event-type-name">{{eventTypeName}}</text>
+      <text class="event-time">{{eventTime}}</text>
+    </view>
+
+    <view class="content-card">
+      <block wx:for="{{fields}}" wx:key="field">
+        <view class="field-item" wx:if="{{item.type !== 'images'}}">
+          <text class="field-label">{{item.label}}</text>
+          <text class="field-value">{{item.displayValue || '-'}}</text>
+        </view>
+        <view class="field-images" wx:if="{{item.type === 'images' && item.value && item.value.length > 0}}">
+          <image wx:for="{{item.value}}" wx:for-item="img" wx:key="*this" class="detail-image" src="{{img}}" mode="aspectFill" bindtap="previewImage" data-url="{{img}}"></image>
+        </view>
+      </block>
+    </view>
+
+    <view class="danger-zone">
+      <button class="delete-btn" bindtap="deleteEvent">删除此事件</button>
+    </view>
+  </view>
+</scroll-view>

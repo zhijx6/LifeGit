@@ -1,0 +1,504 @@
+/**pages/ask-question/ask-question.wxss**/
+page {
+  height: 100vh;
+  background: linear-gradient(180deg, #f8f9fc 0%, #f0f2f8 100%);
+}
+
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+.container {
+  padding: 0 30rpx 40rpx;
+}
+
+/* 提示信息 */
+.tips-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin: 30rpx 0 24rpx;
+}
+
+.tip-item {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 20rpx 24rpx;
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.08) 0%, rgba(51, 51, 51, 0.08) 100%);
+  border-radius: 16rpx;
+  border: 1rpx solid rgba(26, 26, 26, 0.15);
+}
+
+.tip-icon {
+  font-size: 32rpx;
+  flex-shrink: 0;
+}
+
+.tip-text {
+  font-size: 24rpx;
+  color: #1a1a1a;
+  font-weight: 500;
+}
+
+/* 表单区域 */
+.form-section {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.04);
+  border: 1rpx solid rgba(0, 0, 0, 0.02);
+}
+
+.form-group {
+  margin-bottom: 40rpx;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2c3e50;
+  display: block;
+  margin-bottom: 18rpx;
+}
+
+.form-label.required::before {
+  content: '*';
+  color: #f5576c;
+  margin-right: 4rpx;
+}
+
+.form-hint {
+  font-size: 22rpx;
+  color: #adb5bd;
+  display: block;
+  margin-top: -12rpx;
+  margin-bottom: 16rpx;
+}
+
+.title-input {
+  width: 100%;
+  height: 88rpx;
+  border: 2rpx solid #e8ecf1;
+  border-radius: 16rpx;
+  padding: 0 28rpx;
+  font-size: 30rpx;
+  background-color: #fafbfc;
+  box-sizing: border-box;
+  transition: all 0.3s;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.title-input:focus {
+  border-color: #1a1a1a;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 6rpx rgba(26, 26, 26, 0.1);
+}
+
+.content-input {
+  width: 100%;
+  min-height: 200rpx;
+  border: 2rpx solid #e8ecf1;
+  border-radius: 16rpx;
+  padding: 24rpx 28rpx;
+  font-size: 28rpx;
+  background-color: #fafbfc;
+  box-sizing: border-box;
+  transition: all 0.3s;
+  line-height: 42rpx;
+  color: #2c3e50;
+}
+
+.content-input:focus {
+  border-color: #1a1a1a;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 6rpx rgba(26, 26, 26, 0.1);
+}
+
+.char-count {
+  font-size: 22rpx;
+  color: #adb5bd;
+  text-align: right;
+  display: block;
+  margin-top: 10rpx;
+  font-weight: 500;
+}
+
+/* 相关Commit */
+.related-commits {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.commit-item {
+  display: flex;
+  align-items: center;
+  padding: 16rpx;
+  background: linear-gradient(135deg, #f8f9fc 0%, #f0f2f8 100%);
+  border-radius: 12rpx;
+  border: 1rpx solid rgba(0, 0, 0, 0.02);
+}
+
+.commit-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.commit-icon-wrapper {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 12rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.commit-icon-wrapper.purchase {
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.1) 0%, rgba(51, 51, 51, 0.1) 100%);
+}
+
+.commit-icon-wrapper.fault {
+  background: linear-gradient(135deg, rgba(250, 112, 154, 0.1) 0%, rgba(254, 224, 64, 0.1) 100%);
+}
+
+.commit-icon-wrapper.maintenance {
+  background: linear-gradient(135deg, rgba(240, 147, 251, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
+}
+
+.commit-icon-wrapper.experience {
+  background: linear-gradient(135deg, rgba(67, 233, 123, 0.1) 0%, rgba(56, 249, 215, 0.1) 100%);
+}
+
+.commit-icon-wrapper.upgrade {
+  background: linear-gradient(135deg, rgba(79, 172, 254, 0.1) 0%, rgba(0, 242, 254, 0.1) 100%);
+}
+
+.commit-icon {
+  font-size: 24rpx;
+}
+
+.commit-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.commit-type {
+  font-size: 22rpx;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.commit-desc {
+  font-size: 24rpx;
+  color: #6c757d;
+}
+
+.remove-commit {
+  font-size: 32rpx;
+  color: #f5576c;
+  margin-left: 16rpx;
+  flex-shrink: 0;
+  line-height: 48rpx;
+  padding: 0 8rpx;
+}
+
+.add-commit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80rpx;
+  border: 2rpx dashed #d1d5db;
+  border-radius: 16rpx;
+  background: #fafbfc;
+  transition: all 0.3s;
+}
+
+.add-commit-btn:active {
+  border-color: #1a1a1a;
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.05) 0%, rgba(51, 51, 51, 0.05) 100%);
+}
+
+.add-icon {
+  font-size: 32rpx;
+  color: #1a1a1a;
+  margin-right: 8rpx;
+}
+
+.add-text {
+  font-size: 26rpx;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+/* 标签输入 */
+.tags-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  align-items: center;
+}
+
+.tag-item {
+  display: flex;
+  align-items: center;
+  padding: 8rpx 16rpx;
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.08) 0%, rgba(51, 51, 51, 0.08) 100%);
+  border-radius: 12rpx;
+  border: 1rpx solid rgba(26, 26, 26, 0.2);
+}
+
+.tag-text {
+  font-size: 24rpx;
+  color: #1a1a1a;
+  font-weight: 500;
+  margin-right: 8rpx;
+}
+
+.tag-remove {
+  font-size: 28rpx;
+  color: #adb5bd;
+  line-height: 28rpx;
+}
+
+.tag-input-field {
+  flex: 1;
+  min-width: 150rpx;
+  height: 60rpx;
+  border: none;
+  background: transparent;
+  font-size: 26rpx;
+  color: #2c3e50;
+}
+
+/* 匿名选项 */
+.anonymous-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  background: linear-gradient(135deg, #f8f9fc 0%, #f0f2f8 100%);
+  border-radius: 16rpx;
+  border: 1rpx solid rgba(0, 0, 0, 0.02);
+}
+
+.option-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.option-title {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.option-desc {
+  font-size: 22rpx;
+  color: #adb5bd;
+}
+
+.switch-wrapper {
+  width: 80rpx;
+  height: 44rpx;
+  background: #e8ecf1;
+  border-radius: 22rpx;
+  position: relative;
+  transition: all 0.3s;
+  flex-shrink: 0;
+}
+
+.switch-wrapper.active {
+  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+}
+
+.switch-dot {
+  position: absolute;
+  top: 4rpx;
+  left: 4rpx;
+  width: 36rpx;
+  height: 36rpx;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.15);
+  transition: all 0.3s;
+}
+
+.switch-wrapper.active .switch-dot {
+  left: 40rpx;
+}
+
+/* 提交按钮 */
+.submit-section {
+  margin-top: 40rpx;
+}
+
+.submit-btn {
+  width: 100%;
+  height: 96rpx;
+  line-height: 96rpx;
+  background: linear-gradient(135deg, #e8ecf1 0%, #d1d5db 100%);
+  border-radius: 24rpx;
+  font-size: 32rpx;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+  opacity: 0.5;
+  transition: all 0.3s;
+}
+
+.submit-btn.active {
+  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+  opacity: 1;
+  box-shadow: 0 8rpx 32rpx rgba(26, 26, 26, 0.4);
+}
+
+.submit-btn.active:active {
+  transform: scale(0.98);
+  box-shadow: 0 4rpx 20rpx rgba(26, 26, 26, 0.3);
+}
+
+.btn-text {
+  color: #ffffff;
+}
+
+/* Commit选择器弹窗 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 600rpx;
+  background: #ffffff;
+  border-radius: 24rpx;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.modal-close {
+  font-size: 36rpx;
+  color: #adb5bd;
+  line-height: 36rpx;
+}
+
+.modal-body {
+  max-height: 600rpx;
+  overflow-y: auto;
+}
+
+.commit-selector-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.selector-commit-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 32rpx;
+  border-bottom: 1rpx solid rgba(0, 0, 0, 0.03);
+  transition: all 0.3s;
+}
+
+.selector-commit-item.active {
+  background: linear-gradient(135deg, rgba(26, 26, 26, 0.05) 0%, rgba(51, 51, 51, 0.05) 100%);
+}
+
+.selector-commit-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.selector-commit-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.commit-time {
+  font-size: 20rpx;
+  color: #adb5bd;
+}
+
+.checkbox-wrapper {
+  width: 40rpx;
+  height: 40rpx;
+  border: 2rpx solid #e8ecf1;
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  transition: all 0.3s;
+}
+
+.checkbox-wrapper.checked {
+  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+  border-color: transparent;
+}
+
+.checkbox-icon {
+  font-size: 24rpx;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.modal-footer {
+  padding: 24rpx 32rpx;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.05);
+}
+
+.confirm-btn {
+  width: 100%;
+  height: 80rpx;
+  line-height: 80rpx;
+  background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+  color: white;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  text-align: center;
+  border: none;
+}
+
+.confirm-btn:active {
+  transform: scale(0.98);
+}

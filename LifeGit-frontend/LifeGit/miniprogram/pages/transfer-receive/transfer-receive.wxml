@@ -1,0 +1,121 @@
+<!--pages/transfer-receive/transfer-receive.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 头部欢迎 -->
+    <view class="welcome-section">
+      <view class="welcome-icon-wrapper">
+        <text class="welcome-icon">🎁</text>
+      </view>
+      <text class="welcome-title">有人要转让物品给你！</text>
+      <text class="welcome-desc">完整继承历史记录，开启新的使用旅程</text>
+    </view>
+
+    <!-- 物品信息展示 -->
+    <view class="item-showcase">
+      <view class="showcase-header">
+        <text class="showcase-title">物品信息</text>
+        <view class="original-owner-info">
+          <text class="owner-label">来自</text>
+          <text class="owner-name">{{originalOwner.name}}</text>
+        </view>
+      </view>
+
+      <view class="item-card">
+        <image class="item-image" src="{{repoInfo.image}}" mode="aspectFill"></image>
+        <view class="item-details">
+          <text class="item-name">{{repoInfo.name}}</text>
+          <text class="item-brand">{{repoInfo.brand}}</text>
+          <text class="item-model">{{repoInfo.model}}</text>
+          <text class="item-spec">{{repoInfo.spec}}</text>
+        </view>
+      </view>
+
+      <!-- 继承的历史记录预览 -->
+      <view class="inherit-preview">
+        <text class="inherit-title">✨ 将要继承的记录 ({{inheritedEvents.length}}条)</text>
+        <scroll-view class="inherit-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+          <view class="inherit-list">
+            <view class="inherit-item" wx:for="{{inheritedEvents}}" wx:key="id">
+              <view class="inherit-icon-wrapper {{item.type}}">
+                <text class="inherit-icon">{{item.icon}}</text>
+              </view>
+              <view class="inherit-content">
+                <text class="inherit-type">{{item.type}}</text>
+                <text class="inherit-desc">{{item.description}}</text>
+                <text class="inherit-time">{{item.time}}</text>
+              </view>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+    </view>
+
+    <!-- 原主人的附言 -->
+    <view class="message-section" wx:if="{{transferMessage}}">
+      <text class="message-title">📝 附言</text>
+      <view class="message-content">
+        <text class="message-text">{{transferMessage}}</text>
+      </view>
+    </view>
+
+    <!-- 接收表单 -->
+    <view class="form-section">
+      <text class="form-title">确认接收</text>
+
+      <!-- 昵称输入 -->
+      <view class="form-group">
+        <text class="form-label required">你的昵称</text>
+        <input
+          class="form-input"
+          placeholder="请输入你的昵称"
+          value="{{receiverName}}"
+          bindinput="onNameInput"
+        />
+      </view>
+
+      <!-- 确认信息 -->
+      <view class="confirm-info">
+        <text class="confirm-item">• 自动创建新仓库，完整继承所有历史记录</text>
+        <text class="confirm-item">• 与原仓库建立Fork关系，可追溯完整流转链</text>
+        <text class="confirm-item">• 你将成为这个新仓库的主人</text>
+      </view>
+
+      <!-- 选项 -->
+      <view class="options-section">
+        <view class="option-item" bindtap="toggleAutoCreateEvent">
+          <view class="checkbox-wrapper {{autoCreateEvent ? 'checked' : ''}}">
+            <text class="checkbox-icon">{{autoCreateEvent ? '✓' : ''}}</text>
+          </view>
+          <view class="option-content">
+            <text class="option-title">自动创建【购入-二手】事件</text>
+            <text class="option-desc">在接收时自动记录为二手购入</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 转让关系图预览 -->
+    <view class="fork-preview-section">
+      <text class="preview-title">🌳 物品流转链路</text>
+      <view class="fork-chain">
+        <view class="chain-node original">
+          <text class="node-label">原主人</text>
+          <text class="node-name">{{originalOwner.name}}</text>
+        </view>
+        <view class="chain-arrow">→</view>
+        <view class="chain-node current">
+          <text class="node-label">新主人</text>
+          <text class="node-name">{{receiverName || '你'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="action-btn decline-btn" bindtap="declineTransfer">拒绝接收</button>
+      <button class="action-btn accept-btn {{receiverName ? 'active' : ''}}" bindtap="acceptTransfer" disabled="{{!receiverName}}">
+        <text class="btn-text">确认接收</text>
+      </button>
+    </view>
+  </view>
+</scroll-view>

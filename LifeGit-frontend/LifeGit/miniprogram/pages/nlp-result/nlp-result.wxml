@@ -1,0 +1,116 @@
+<!--pages/nlp-result/nlp-result.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+    <!-- 成功提示 -->
+    <view class="success-banner">
+      <text class="success-icon">✨</text>
+      <view class="success-text">
+        <text class="success-title">AI分析完成</text>
+        <text class="success-desc">已成功识别关键信息</text>
+      </view>
+    </view>
+
+    <!-- 原始文本 -->
+    <view class="original-text-section">
+      <text class="section-label">原始描述</text>
+      <text class="original-text">{{originalText}}</text>
+    </view>
+
+    <!-- 实体识别结果 -->
+    <view class="entities-section">
+      <text class="section-title">识别的实体</text>
+      <view class="entities-list">
+        <view class="entity-item" wx:for="{{entities}}" wx:key="id">
+          <view class="entity-icon-wrapper {{entityType.class}}">
+            <text class="entity-icon">{{entityType.icon}}</text>
+          </view>
+          <view class="entity-content">
+            <text class="entity-label">{{entityType.label}}</text>
+            <text class="entity-value">{{item.value}}</text>
+          </view>
+          <view class="entity-confidence">
+            <text class="confidence-text">置信度 {{item.confidence}}%</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 分类建议 -->
+    <view class="category-section">
+      <text class="section-title">建议分类</text>
+      <view class="category-recommendation">
+        <view class="category-main">
+          <view class="category-icon-wrapper">
+            <text class="category-icon">{{recommendedCategory.icon}}</text>
+          </view>
+          <view class="category-info">
+            <text class="category-name">{{recommendedCategory.name}}</text>
+            <text class="category-desc">{{recommendedCategory.desc}}</text>
+          </view>
+          <view class="category-badge">
+            <text class="badge-text">推荐</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 其他分类选项 -->
+      <text class="subsection-title">其他可能分类</text>
+      <view class="category-alternatives">
+        <view class="category-item {{selectedCategory === item.id ? 'active' : ''}}"
+              wx:for="{{alternativeCategories}}"
+              wx:key="id"
+              bindtap="selectCategory"
+              data-id="{{item.id}}">
+          <view class="category-radio">
+            <text class="radio-icon">{{selectedCategory === item.id ? '◉' : '○'}}</text>
+          </view>
+          <view class="alt-category-content">
+            <text class="alt-category-name">{{item.name}}</text>
+            <text class="alt-category-desc">{{item.desc}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 生成的结构化信息 -->
+    <view class="structured-info-section">
+      <text class="section-title">生成的仓库信息</text>
+      <view class="info-preview">
+        <view class="preview-item">
+          <text class="preview-label">名称</text>
+          <text class="preview-value">{{structuredInfo.name}}</text>
+        </view>
+        <view class="preview-item" wx:if="{{structuredInfo.brand}}">
+          <text class="preview-label">品牌</text>
+          <text class="preview-value">{{structuredInfo.brand}}</text>
+        </view>
+        <view class="preview-item" wx:if="{{structuredInfo.model}}">
+          <text class="preview-label">型号</text>
+          <text class="preview-value">{{structuredInfo.model}}</text>
+        </view>
+        <view class="preview-item" wx:if="{{structuredInfo.color}}">
+          <text class="preview-label">颜色</text>
+          <text class="preview-value">{{structuredInfo.color}}</text>
+        </view>
+        <view class="preview-item" wx:if="{{structuredInfo.location}}">
+          <text class="preview-label">位置</text>
+          <text class="preview-value">{{structuredInfo.location}}</text>
+        </view>
+        <view class="preview-item" wx:if="{{structuredInfo.spec}}">
+          <text class="preview-label">规格</text>
+          <text class="preview-value">{{structuredInfo.spec}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button class="action-btn secondary-btn" bindtap="goBack">
+        <text class="btn-text">重新描述</text>
+      </button>
+      <button class="action-btn primary-btn" bindtap="confirmCreate">
+        <text class="btn-text">确认创建</text>
+      </button>
+    </view>
+  </view>
+</scroll-view>

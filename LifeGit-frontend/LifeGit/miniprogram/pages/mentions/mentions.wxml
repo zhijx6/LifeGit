@@ -1,0 +1,35 @@
+<scroll-view class="scrollarea" scroll-y bindscrolltolower="loadMore">
+  <view class="container">
+    <!-- 顶部操作栏 -->
+    <view class="header-bar">
+      <text class="unread-count" wx:if="{{unreadCount > 0}}">{{unreadCount}} 条未读</text>
+      <text class="read-all-btn" bindtap="markAllRead" wx:if="{{unreadCount > 0}}">全部已读</text>
+    </view>
+
+    <!-- 提醒列表 -->
+    <block wx:if="{{mentions.length > 0}}">
+      <view class="mention-item {{item.is_read ? '' : 'unread'}}" wx:for="{{mentions}}" wx:key="id" bindtap="goToIssue" data-issue-id="{{item.issue_id}}">
+        <view class="mention-dot" wx:if="{{!item.is_read}}"></view>
+        <view class="mention-content">
+          <text class="mention-issue-title">{{item.issue_title}}</text>
+          <text class="mention-reply-text">{{item.reply_content}}</text>
+          <view class="mention-meta">
+            <text class="mention-time">{{item.mention_time}}</text>
+          </view>
+        </view>
+        <text class="mention-arrow">›</text>
+      </view>
+    </block>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{!loading && mentions.length === 0}}">
+      <text class="empty-icon">🔔</text>
+      <text class="empty-text">暂无@提醒</text>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+  </view>
+</scroll-view>
