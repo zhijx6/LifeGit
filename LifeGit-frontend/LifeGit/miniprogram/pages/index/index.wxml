@@ -51,7 +51,7 @@
         <!-- NLP语义创仓 -->
         <view class="create-card nlp-card" bindtap="goToNLPCreate">
           <view class="card-icon nlp-icon">
-            <text class="icon-text">✨</text>
+            <view class="icon-svg-nlp"></view>
           </view>
           <view class="card-content">
             <text class="card-title">智能创仓</text>
@@ -75,10 +75,9 @@
           <text class="form-label">类型 *</text>
           <view class="type-selector">
             <view class="type-option {{formData.type === 'item' ? 'active' : ''}}" bindtap="onTypeSelect" data-type="item">
-              <text class="type-icon">📦</text>
               <text class="type-text">物品</text>
             </view>
-            <view class="type-option {{formData.type === 'place' ? 'active' : ''}}" bindtap="onTypeSelect" data-type="place">              <text class="type-icon">📍</text>
+            <view class="type-option {{formData.type === 'place' ? 'active' : ''}}" bindtap="onTypeSelect" data-type="place">
               <text class="type-text">地点</text>
             </view>
           </view>
@@ -86,19 +85,19 @@
 
         <view class="form-item">
           <text class="form-label">{{formData.type === 'place' ? '地点名称' : '商品名称'}} *</text>
-          <input class="form-input" placeholder="{{formData.type === 'place' ? '请输入地点名称' : '请输入商品名称'}}" value="{{formData.name}}" bindinput="onNameInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="{{formData.type === 'place' ? '请输入地点名称' : '请输入商品名称'}}" value="{{formData.name}}" bindinput="onNameInput" />
         </view>
         <view class="form-item">
           <text class="form-label">{{formData.type === 'place' ? '地址' : '品牌'}}</text>
-          <input class="form-input" placeholder="{{formData.type === 'place' ? '请输入详细地址' : '请输入品牌'}}" value="{{formData.brand}}" bindinput="onBrandInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="{{formData.type === 'place' ? '请输入详细地址' : '请输入品牌'}}" value="{{formData.brand}}" bindinput="onBrandInput" />
         </view>
         <view class="form-item" wx:if="{{formData.type === 'item'}}">
           <text class="form-label">型号</text>
-          <input class="form-input" placeholder="请输入型号" value="{{formData.model}}" bindinput="onModelInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="请输入型号" value="{{formData.model}}" bindinput="onModelInput" />
         </view>
         <view class="form-item">
           <text class="form-label">{{formData.type === 'place' ? '备注' : '规格'}}</text>
-          <input class="form-input" placeholder="{{formData.type === 'place' ? '请输入备注信息' : '请输入规格'}}" value="{{formData.spec}}" bindinput="onSpecInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="{{formData.type === 'place' ? '请输入备注信息' : '请输入规格'}}" value="{{formData.spec}}" bindinput="onSpecInput" />
         </view>
 
         <!-- 图片上传 -->

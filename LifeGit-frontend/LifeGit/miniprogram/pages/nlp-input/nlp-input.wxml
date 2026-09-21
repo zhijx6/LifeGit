@@ -1,16 +1,9 @@
 <!--pages/nlp-input/nlp-input.wxml-->
 <scroll-view class="scrollarea" scroll-y type="list">
   <view class="container">
-    <!-- 头部装饰 -->
-    <view class="header-decoration">
-      <view class="decoration-circle circle-1"></view>
-      <view class="decoration-circle circle-2"></view>
-      <view class="decoration-circle circle-3"></view>
-    </view>
-
     <!-- 页面标题 -->
     <view class="page-header">
-      <text class="page-title">✨ 智能创仓</text>
+      <text class="page-title">智能创仓</text>
       <text class="page-subtitle">用自然语言描述，AI自动识别信息</text>
     </view>
 
@@ -20,6 +13,7 @@
         <textarea
           class="nlp-input"
           placeholder="试试这样描述..."
+          placeholder-class="ph"
           value="{{inputText}}"
           bindinput="onInputChange"
           maxlength="200"
@@ -44,7 +38,7 @@
       <text class="examples-title">试试这些描述</text>
       <view class="examples-list">
         <view class="example-item {{selectedExample === index ? 'active' : ''}}" wx:for="{{examples}}" wx:key="index" bindtap="selectExample" data-index="{{index}}">
-          <text class="example-icon">{{item.icon}}</text>
+          <view class="example-dot"></view>
           <text class="example-text">{{item.text}}</text>
         </view>
       </view>
@@ -53,21 +47,21 @@
     <!-- 功能说明 -->
     <view class="features-section">
       <view class="feature-item">
-        <view class="feature-icon">🎯</view>
+        <view class="feature-icon-svg icon-target"></view>
         <view class="feature-content">
           <text class="feature-title">智能识别</text>
           <text class="feature-desc">自动提取品牌、型号、颜色等信息</text>
         </view>
       </view>
       <view class="feature-item">
-        <view class="feature-icon">🏷️</view>
+        <view class="feature-icon-svg icon-tag"></view>
         <view class="feature-content">
           <text class="feature-title">自动分类</text>
           <text class="feature-desc">智能判断物品类型并推荐分类</text>
         </view>
       </view>
       <view class="feature-item">
-        <view class="feature-icon">⚡</view>
+        <view class="feature-icon-svg icon-zap"></view>
         <view class="feature-content">
           <text class="feature-title">快速创建</text>
           <text class="feature-desc">一键生成结构化仓库信息</text>
@@ -78,7 +72,6 @@
     <!-- 分析按钮 -->
     <view class="analyze-btn-wrapper">
       <button class="analyze-btn {{inputText ? 'active' : ''}}" bindtap="analyzeText" disabled="{{!inputText}}">
-        <text class="btn-icon">🔍</text>
         <text class="btn-text">开始分析</text>
       </button>
     </view>

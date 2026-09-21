@@ -1,172 +1,171 @@
 /**app.wxss**/
-/* 全局样式 */
+/* LifeGit 全局设计系统：黑白灰 · 极简 · 高级 · 克制 · 工具类 App */
+/* 所有页面统一使用本文件定义的 Design Token，不要在页面内自定义颜色体系 */
+
 page {
-  background: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 100%);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
-  font-size: 28rpx;
-  color: #1a1a1a;
+  /* ===== Design Tokens：颜色 ===== */
+  --bg: #F7F7F7;                    /* 页面背景 */
+  --surface: #FFFFFF;               /* 卡片 / 表面 */
+  --surface-muted: #F7F7F7;         /* 弱表面：卡内嵌套块 / 按压态 */
+  --text-primary: #1A1A1A;          /* 主文字 */
+  --text-secondary: #777777;        /* 次级文字 */
+  --text-tertiary: #999999;         /* 辅助文字 */
+  --text-light: #B5B5B5;            /* 浅色文字 / 箭头 */
+  --placeholder: #AAAAAA;           /* 占位符 */
+  --border: #E5E5E5;                /* 输入框 / 嵌套块边框 */
+  --border-light: #ECECEC;          /* 卡片边框（极浅） */
+  --divider: #F0F0F0;               /* 分割线 */
+  --button-primary: #1A1A1A;        /* 主按钮背景 */
+  --button-primary-pressed: #333333;/* 主按钮按压态 */
+  --button-secondary: #FFFFFF;      /* 次按钮背景 */
+  --button-secondary-text: #1A1A1A; /* 次按钮文字 */
+
+  /* ===== Design Tokens：圆角 ===== */
+  --radius-sm: 12rpx;               /* 徽章 / 小标签 6px */
+  --radius-md: 20rpx;               /* 输入框 / 按钮 10px */
+  --radius-lg: 24rpx;               /* 卡片 12px */
+
+  /* ===== Design Tokens：字号 ===== */
+  --font-title: 48rpx;              /* 页面标题 24px / 600 */
+  --font-section: 40rpx;            /* 模块标题 20px / 600 */
+  --font-label: 32rpx;              /* 字段标题 16px / 500-600 */
+  --font-body: 30rpx;               /* 正文 15px / 400 */
+  --font-caption: 26rpx;            /* 辅助文字 13px / 400 */
+
+  background: var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: var(--font-body);
+  color: var(--text-primary);
   line-height: 1.6;
 }
 
-/* 通用容器 */
+/* ===== 通用容器 ===== */
 .container {
   min-height: 100vh;
   box-sizing: border-box;
 }
 
-/* 通用卡片 */
+/* ===== 通用卡片：白底 + 1px 极浅边框 + 12px 圆角，无阴影 ===== */
 .card {
-  background: #ffffff;
-  border-radius: 20rpx;
-  padding: 28rpx;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 32rpx;
   margin-bottom: 24rpx;
-  box-shadow: 0 4rpx 24rpx rgba(0, 0, 0, 0.04);
-  border: 1rpx solid rgba(0, 0, 0, 0.02);
+  border: 1rpx solid var(--border-light);
+  box-sizing: border-box;
 }
 
-/* 通用按钮 */
+/* ===== 通用按钮 ===== */
 .btn {
   height: 88rpx;
   line-height: 88rpx;
-  border-radius: 16rpx;
-  font-size: 30rpx;
+  border-radius: var(--radius-md);
+  font-size: var(--font-body);
   font-weight: 500;
   text-align: center;
   border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.btn::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.3s, height 0.3s;
-}
-
-.btn:active::after {
-  width: 200rpx;
-  height: 200rpx;
+  padding: 0;
+  margin: 0;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .btn:active {
-  transform: scale(0.96);
+  opacity: 0.9;
 }
 
+/* 主操作：黑底白字 */
 .btn-primary {
-  background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
-  color: white;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.2);
+  background: var(--button-primary);
+  color: #FFFFFF;
 }
 
+.btn-primary:active {
+  background: var(--button-primary-pressed);
+}
+
+/* 次操作：白底灰边黑字 */
 .btn-secondary {
-  background: linear-gradient(135deg, #666666 0%, #4d4d4d 100%);
-  color: white;
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+  background: var(--button-secondary);
+  color: var(--button-secondary-text);
+  border: 1rpx solid var(--border);
+  box-sizing: border-box;
+}
+
+.btn-secondary:active {
+  background: var(--surface-muted);
 }
 
 .btn-outline {
   background: transparent;
-  border: 2rpx solid #333333;
-  color: #333333;
+  border: 1rpx solid var(--text-primary);
+  color: var(--text-primary);
+  box-sizing: border-box;
 }
 
-/* 通用输入框 */
+/* ===== 通用输入框 ===== */
 .input {
   width: 100%;
   height: 88rpx;
-  border: 2rpx solid #e8ecf1;
-  border-radius: 16rpx;
-  padding: 0 28rpx;
-  font-size: 28rpx;
-  background-color: #fafbfc;
+  border: 1rpx solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0 24rpx;
+  font-size: var(--font-body);
+  background-color: var(--surface);
   box-sizing: border-box;
-  transition: all 0.3s;
+  color: var(--text-primary);
+  transition: border-color 0.2s ease;
 }
 
 .input:focus {
-  border-color: #333333;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 4rpx rgba(0, 0, 0, 0.08);
+  border-color: var(--text-primary);
 }
 
-/* 通用文本 */
+/* 占位符 */
+.ph {
+  color: var(--placeholder);
+}
+
+/* ===== 通用文字层级 ===== */
 .text-primary {
-  color: #1a1a1a;
+  color: var(--text-primary);
 }
 
 .text-secondary {
-  color: #4d4d4d;
+  color: var(--text-secondary);
 }
 
 .text-muted {
-  color: #999999;
+  color: var(--text-tertiary);
 }
 
+/* 页面标题 24px / 600 */
 .text-title {
-  font-size: 36rpx;
-  font-weight: 700;
-  color: #1a1a1a;
-  letter-spacing: -0.5rpx;
-}
-
-.text-subtitle {
-  font-size: 30rpx;
+  font-size: var(--font-title);
   font-weight: 600;
-  color: #2d2d2d;
+  color: var(--text-primary);
+  letter-spacing: -1rpx;
 }
 
+/* 模块标题 20px / 600 */
+.text-subtitle {
+  font-size: var(--font-section);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 正文 15px / 400 */
 .text-body {
-  font-size: 28rpx;
-  color: #4d4d4d;
+  font-size: var(--font-body);
+  color: var(--text-secondary);
 }
 
+/* 辅助 13px / 400 */
 .text-caption {
-  font-size: 24rpx;
-  color: #999999;
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
 }
 
-/* 渐变背景类 */
-.gradient-purple {
-  background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
-}
-
-.gradient-pink {
-  background: linear-gradient(135deg, #4d4d4d 0%, #333333 100%);
-}
-
-.gradient-blue {
-  background: linear-gradient(135deg, #666666 0%, #4d4d4d 100%);
-}
-
-.gradient-green {
-  background: linear-gradient(135deg, #808080 0%, #666666 100%);
-}
-
-.gradient-orange {
-  background: linear-gradient(135deg, #999999 0%, #808080 100%);
-}
-
-.gradient-sunset {
-  background: linear-gradient(135deg, #b3b3b3 0%, #999999 100%);
-}
-
-/* 毛玻璃效果 */
-.glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20rpx);
-  -webkit-backdrop-filter: blur(20rpx);
-  border: 1rpx solid rgba(255, 255, 255, 0.3);
-}
-
-/* 通用间距 */
+/* ===== 通用间距（8px 网格） ===== */
 .mt-10 { margin-top: 10rpx; }
 .mt-20 { margin-top: 20rpx; }
 .mt-30 { margin-top: 30rpx; }
@@ -191,7 +190,7 @@ page {
 .pb-40 { padding-bottom: 40rpx; }
 .pb-60 { padding-bottom: 60rpx; }
 
-/* 通用布局 */
+/* ===== 通用布局 ===== */
 .flex {
   display: flex;
 }
@@ -213,49 +212,36 @@ page {
   flex-direction: column;
 }
 
-/* 通用圆角 */
-.radius-sm { border-radius: 8rpx; }
-.radius-md { border-radius: 12rpx; }
-.radius-lg { border-radius: 16rpx; }
-.radius-xl { border-radius: 24rpx; }
+/* ===== 通用圆角 ===== */
+.radius-sm { border-radius: var(--radius-sm); }
+.radius-md { border-radius: var(--radius-md); }
+.radius-lg { border-radius: var(--radius-lg); }
+.radius-xl { border-radius: 28rpx; }
 .radius-2xl { border-radius: 32rpx; }
 .radius-full { border-radius: 9999rpx; }
 
-/* 通用阴影 */
+/* ===== 通用阴影（默认不用；必须用时保持极弱） ===== */
 .shadow-xs {
-  box-shadow: 0 1rpx 3rpx rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1rpx 3rpx rgba(0, 0, 0, 0.03);
 }
 
 .shadow-sm {
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
 }
 
 .shadow-md {
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
 }
 
 .shadow-lg {
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
 }
 
 .shadow-xl {
-  box-shadow: 0 16rpx 48rpx rgba(0, 0, 0, 0.16);
+  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.08);
 }
 
-/* 彩色阴影 */
-.shadow-purple {
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
-}
-
-.shadow-pink {
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
-}
-
-.shadow-blue {
-  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
-}
-
-/* 动画效果 */
+/* ===== 动画 ===== */
 .fade-in {
   animation: fadeIn 0.3s ease-out;
 }

@@ -29,16 +29,14 @@
     <view class="fork-entry-section" wx:if="{{!isTransferred}}">
       <view class="fork-header">
         <view class="header-left">
-          <text class="section-title">🔄 物品流转</text>
+          <text class="section-title">物品流转</text>
           <text class="fork-desc">转让给新主人，完整继承历史记录</text>
         </view>
       </view>
 
       <view class="fork-actions">
         <view class="fork-option-card" bindtap="initiateTransfer">
-          <view class="fork-icon-wrapper">
-            <text class="fork-icon">🎁</text>
-          </view>
+          <view class="fork-icon-svg"></view>
           <view class="fork-content">
             <text class="fork-title">转让物品</text>
             <text class="fork-subtitle">生成专属转让链接</text>
@@ -50,7 +48,7 @@
       <!-- Fork关系图预览 -->
       <view class="fork-graph-preview" wx:if="{{hasForkRelations}}">
         <view class="graph-header">
-          <text class="graph-title">🌳 流转关系</text>
+          <text class="graph-title">流转关系</text>
           <text class="graph-count">{{forkCount}} 次流转</text>
         </view>
         <view class="graph-preview" bindtap="showForkGraph">
@@ -93,7 +91,7 @@
     <view class="issue-entry-section">
       <view class="issue-header">
         <view class="header-left">
-          <text class="section-title">💬 问答社区</text>
+          <text class="section-title">问答社区</text>
           <text class="issue-count">{{issueCount}} 个问题</text>
         </view>
         <view class="header-actions">
@@ -124,7 +122,6 @@
 
       <!-- 空状态 -->
       <view class="empty-issues" wx:else>
-        <text class="empty-icon">💭</text>
         <text class="empty-text">还没有人提问</text>
         <text class="empty-hint">成为第一个提问的人吧</text>
       </view>

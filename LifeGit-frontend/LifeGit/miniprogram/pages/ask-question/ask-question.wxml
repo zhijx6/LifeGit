@@ -4,11 +4,11 @@
     <!-- 提示信息 -->
     <view class="tips-section">
       <view class="tip-item">
-        <text class="tip-icon">💡</text>
+        <view class="tip-dot"></view>
         <text class="tip-text">提问前请先搜索，避免重复提问</text>
       </view>
       <view class="tip-item">
-        <text class="tip-icon">🎯</text>
+        <view class="tip-dot"></view>
         <text class="tip-text">清晰描述问题，更容易得到回答</text>
       </view>
     </view>
@@ -20,6 +20,7 @@
         <input
           class="title-input"
           placeholder="简要描述你的问题..."
+          placeholder-class="ph"
           value="{{questionTitle}}"
           bindinput="onTitleInput"
           maxlength="50"
@@ -32,6 +33,7 @@
         <textarea
           class="content-input"
           placeholder="详细描述你的问题，包括具体场景、使用环境等..."
+          placeholder-class="ph"
           value="{{questionContent}}"
           bindinput="onContentInput"
           maxlength="500"
@@ -49,9 +51,6 @@
         <view class="related-commits" wx:if="{{relatedCommits.length > 0}}">
           <view class="commit-item" wx:for="{{relatedCommits}}" wx:key="id">
             <view class="commit-info">
-              <view class="commit-icon-wrapper {{item.type}}">
-                <text class="commit-icon">{{item.icon}}</text>
-              </view>
               <view class="commit-details">
                 <text class="commit-type">{{item.type}}</text>
                 <text class="commit-desc">{{item.description}}</text>
@@ -78,6 +77,7 @@
           <input
             class="tag-input-field"
             placeholder="添加标签..."
+          placeholder-class="ph"
           value="{{tagInput}}"
           bindinput="onTagInput"
           bindconfirm="addTag"
@@ -114,7 +114,7 @@
   <view class="modal-content" catchtap="stopPropagation">
     <view class="modal-header">
       <text class="modal-title">选择相关记录</text>
-      <text class="modal-close" bindtap="hideCommitSelector">✕</text>
+      <text class="modal-close" bindtap="hideCommitSelector">×</text>
     </view>
     <view class="modal-body">
       <view class="commit-selector-list">
@@ -124,9 +124,6 @@
               bindtap="toggleCommit"
               data-id="{{item.id}}">
           <view class="selector-commit-info">
-            <view class="commit-icon-wrapper {{item.type}}">
-              <text class="commit-icon">{{item.icon}}</text>
-            </view>
             <view class="selector-commit-details">
               <text class="commit-type">{{item.type}}</text>
               <text class="commit-desc">{{item.description}}</text>

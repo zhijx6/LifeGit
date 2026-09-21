@@ -3,9 +3,6 @@
   <view class="container">
     <!-- 头部欢迎 -->
     <view class="welcome-section">
-      <view class="welcome-icon-wrapper">
-        <text class="welcome-icon">🎁</text>
-      </view>
       <text class="welcome-title">有人要转让物品给你！</text>
       <text class="welcome-desc">完整继承历史记录，开启新的使用旅程</text>
     </view>
@@ -32,13 +29,11 @@
 
       <!-- 继承的历史记录预览 -->
       <view class="inherit-preview">
-        <text class="inherit-title">✨ 将要继承的记录 ({{inheritedEvents.length}}条)</text>
+        <text class="inherit-title">将要继承的记录（{{inheritedEvents.length}} 条）</text>
         <scroll-view class="inherit-scroll" scroll-y enhanced show-scrollbar="{{false}}">
           <view class="inherit-list">
             <view class="inherit-item" wx:for="{{inheritedEvents}}" wx:key="id">
-              <view class="inherit-icon-wrapper {{item.type}}">
-                <text class="inherit-icon">{{item.icon}}</text>
-              </view>
+              <view class="inherit-dot"></view>
               <view class="inherit-content">
                 <text class="inherit-type">{{item.type}}</text>
                 <text class="inherit-desc">{{item.description}}</text>
@@ -52,7 +47,7 @@
 
     <!-- 原主人的附言 -->
     <view class="message-section" wx:if="{{transferMessage}}">
-      <text class="message-title">📝 附言</text>
+      <text class="message-title">附言</text>
       <view class="message-content">
         <text class="message-text">{{transferMessage}}</text>
       </view>
@@ -67,6 +62,7 @@
         <text class="form-label required">你的昵称</text>
         <input
           class="form-input"
+          placeholder-class="ph"
           placeholder="请输入你的昵称"
           value="{{receiverName}}"
           bindinput="onNameInput"
@@ -96,7 +92,7 @@
 
     <!-- 转让关系图预览 -->
     <view class="fork-preview-section">
-      <text class="preview-title">🌳 物品流转链路</text>
+      <text class="preview-title">物品流转链路</text>
       <view class="fork-chain">
         <view class="chain-node original">
           <text class="node-label">原主人</text>

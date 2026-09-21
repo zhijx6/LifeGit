@@ -61,7 +61,6 @@
             </view>
             <view class="meta-right">
               <view class="answer-info">
-                <text class="answer-icon">💬</text>
                 <text class="answer-count">{{item.answerCount}}</text>
               </view>
               <view class="best-answer-badge" wx:if="{{item.hasBestAnswer}}">
@@ -75,7 +74,6 @@
       <!-- 空状态 -->
       <block wx:else>
         <view class="empty-state">
-          <text class="empty-icon">💭</text>
           <text class="empty-title">还没有问题</text>
           <text class="empty-desc">成为第一个提问的人吧</text>
           <button class="ask-first-btn" bindtap="askQuestion">发起提问</button>

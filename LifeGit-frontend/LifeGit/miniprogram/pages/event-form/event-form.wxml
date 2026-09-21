@@ -2,8 +2,8 @@
 <scroll-view class="scrollarea" scroll-y type="list">
   <view class="container">
     <!-- 事件类型标题 -->
-    <view class="event-header event-header-{{eventType}}">
-      <text class="event-icon">{{eventConfig.icon}}</text>
+    <view class="event-header">
+      <view class="event-icon-box icon-{{eventType}}"></view>
       <view class="header-text">
         <text class="event-title">{{eventConfig.title}}</text>
         <text class="event-subtitle">{{eventConfig.subtitle}}</text>
@@ -32,7 +32,7 @@
           <text class="form-label required">购入价格</text>
           <view class="price-input-wrapper">
             <text class="currency-symbol">¥</text>
-            <input class="price-input" type="digit" placeholder="0.00" value="{{formData.price}}" bindinput="onPriceInput" />
+            <input class="price-input" type="digit" placeholder-class="ph" placeholder="0.00" value="{{formData.price}}" bindinput="onPriceInput" />
           </view>
         </view>
 
@@ -67,7 +67,7 @@
         <!-- 初始体验 -->
         <view class="form-group">
           <text class="form-label">初始体验</text>
-          <textarea class="form-textarea" placeholder="记录你的第一印象和初始体验..." value="{{formData.initialExperience}}" bindinput="onInitialExperienceInput" maxlength="500"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="记录你的第一印象和初始体验..." value="{{formData.initialExperience}}" bindinput="onInitialExperienceInput" maxlength="500"></textarea>
           <text class="char-count">{{formData.initialExperience.length}}/500</text>
         </view>
       </block>
@@ -103,7 +103,7 @@
         <!-- 维护项目 -->
         <view class="form-group">
           <text class="form-label required">维护项目</text>
-          <input class="form-input" placeholder="如：更换电池、屏幕贴膜" value="{{formData.maintenanceItem}}" bindinput="onMaintenanceItemInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="如：更换电池、屏幕贴膜" value="{{formData.maintenanceItem}}" bindinput="onMaintenanceItemInput" />
         </view>
 
         <!-- 费用 -->
@@ -111,14 +111,14 @@
           <text class="form-label">费用</text>
           <view class="price-input-wrapper">
             <text class="currency-symbol">¥</text>
-            <input class="price-input" type="digit" placeholder="0.00" value="{{formData.maintenanceCost}}" bindinput="onMaintenanceCostInput" />
+            <input class="price-input" type="digit" placeholder-class="ph" placeholder="0.00" value="{{formData.maintenanceCost}}" bindinput="onMaintenanceCostInput" />
           </view>
         </view>
 
         <!-- 维修点 -->
         <view class="form-group">
           <text class="form-label">维修点/服务商</text>
-          <input class="form-input" placeholder="官方售后/第三方维修店" value="{{formData.repairShop}}" bindinput="onRepairShopInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="官方售后/第三方维修店" value="{{formData.repairShop}}" bindinput="onRepairShopInput" />
         </view>
 
         <!-- 更换零件照片 -->
@@ -187,7 +187,7 @@
         <!-- 升级项目 -->
         <view class="form-group">
           <text class="form-label required">升级项目</text>
-          <input class="form-input" placeholder="如：内存升级 16GB→32GB" value="{{formData.upgradeItem}}" bindinput="onUpgradeItemInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="如：内存升级 16GB→32GB" value="{{formData.upgradeItem}}" bindinput="onUpgradeItemInput" />
         </view>
 
         <!-- 费用 -->
@@ -195,14 +195,14 @@
           <text class="form-label">费用</text>
           <view class="price-input-wrapper">
             <text class="currency-symbol">¥</text>
-            <input class="price-input" type="digit" placeholder="0.00" value="{{formData.upgradeCost}}" bindinput="onUpgradeCostInput" />
+            <input class="price-input" type="digit" placeholder-class="ph" placeholder="0.00" value="{{formData.upgradeCost}}" bindinput="onUpgradeCostInput" />
           </view>
         </view>
 
         <!-- 性能提升感受 -->
         <view class="form-group">
           <text class="form-label">性能提升感受</text>
-          <textarea class="form-textarea" placeholder="描述升级后的性能变化和使用体验..." value="{{formData.performanceExperience}}" bindinput="onPerformanceExperienceInput" maxlength="500"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="描述升级后的性能变化和使用体验..." value="{{formData.performanceExperience}}" bindinput="onPerformanceExperienceInput" maxlength="500"></textarea>
           <text class="char-count">{{formData.performanceExperience.length}}/500</text>
         </view>
       </block>
@@ -235,20 +235,20 @@
         <!-- 体验标题 -->
         <view class="form-group">
           <text class="form-label required">体验标题</text>
-          <input class="form-input" placeholder="如：带父母出游的体验" value="{{formData.experienceTitle}}" bindinput="onExperienceTitleInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="如：带父母出游的体验" value="{{formData.experienceTitle}}" bindinput="onExperienceTitleInput" />
         </view>
 
         <!-- 场景描述 -->
         <view class="form-group">
           <text class="form-label">场景描述</text>
-          <textarea class="form-textarea" placeholder="描述当时的场景和环境..." value="{{formData.sceneDescription}}" bindinput="onSceneDescriptionInput" maxlength="300"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="描述当时的场景和环境..." value="{{formData.sceneDescription}}" bindinput="onSceneDescriptionInput" maxlength="300"></textarea>
           <text class="char-count">{{formData.sceneDescription.length}}/300</text>
         </view>
 
         <!-- 体验感受 -->
         <view class="form-group">
           <text class="form-label">体验感受</text>
-          <textarea class="form-textarea" placeholder="记录当时的心情和感受..." value="{{formData.experienceFeeling}}" bindinput="onExperienceFeelingInput" maxlength="500"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="记录当时的心情和感受..." value="{{formData.experienceFeeling}}" bindinput="onExperienceFeelingInput" maxlength="500"></textarea>
           <text class="char-count">{{formData.experienceFeeling.length}}/500</text>
         </view>
 
@@ -288,7 +288,7 @@
         <!-- 标题 -->
         <view class="form-group">
           <text class="form-label required">标题</text>
-          <input class="form-input" placeholder="如：带父母出游的体验" value="{{formData.memoryTitle}}" bindinput="onMemoryTitleInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="如：带父母出游的体验" value="{{formData.memoryTitle}}" bindinput="onMemoryTitleInput" />
         </view>
 
         <!-- 体验类型 -->
@@ -307,13 +307,13 @@
         <!-- 参与人员 -->
         <view class="form-group">
           <text class="form-label">参与人员</text>
-          <input class="form-input" placeholder="如：家人、朋友" value="{{formData.participants}}" bindinput="onParticipantsInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="如：家人、朋友" value="{{formData.participants}}" bindinput="onParticipantsInput" />
         </view>
 
         <!-- 体验地点 -->
         <view class="form-group">
           <text class="form-label">体验地点</text>
-          <input class="form-input" placeholder="请输入体验地点" value="{{formData.location}}" bindinput="onLocationInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="请输入体验地点" value="{{formData.location}}" bindinput="onLocationInput" />
         </view>
 
         <!-- 情感评分 -->
@@ -330,27 +330,27 @@
         <!-- 关键词 -->
         <view class="form-group">
           <text class="form-label">关键词</text>
-          <input class="form-input" placeholder="多个关键词用逗号分隔" value="{{formData.keywords}}" bindinput="onKeywordsInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="多个关键词用逗号分隔" value="{{formData.keywords}}" bindinput="onKeywordsInput" />
         </view>
 
         <!-- 故事背景 -->
         <view class="form-group">
           <text class="form-label">故事背景</text>
-          <textarea class="form-textarea" placeholder="描述这次体验的背景..." value="{{formData.storyBackground}}" bindinput="onStoryBackgroundInput" maxlength="500"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="描述这次体验的背景..." value="{{formData.storyBackground}}" bindinput="onStoryBackgroundInput" maxlength="500"></textarea>
           <text class="char-count">{{formData.storyBackground.length}}/500</text>
         </view>
 
         <!-- 情感体验 -->
         <view class="form-group">
           <text class="form-label">情感体验</text>
-          <textarea class="form-textarea" placeholder="记录当时的感受和体验..." value="{{formData.emotionalExperience}}" bindinput="onEmotionalExperienceInput" maxlength="1500"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="记录当时的感受和体验..." value="{{formData.emotionalExperience}}" bindinput="onEmotionalExperienceInput" maxlength="1500"></textarea>
           <text class="char-count">{{formData.emotionalExperience.length}}/1500</text>
         </view>
 
         <!-- 收获与感悟 -->
         <view class="form-group">
           <text class="form-label">收获与感悟</text>
-          <textarea class="form-textarea" placeholder="记录这次体验的收获..." value="{{formData.learnings}}" bindinput="onLearningsInput" maxlength="1000"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="记录这次体验的收获..." value="{{formData.learnings}}" bindinput="onLearningsInput" maxlength="1000"></textarea>
           <text class="char-count">{{formData.learnings.length}}/1000</text>
         </view>
 
@@ -403,7 +403,7 @@
         <!-- 故障现象 -->
         <view class="form-group">
           <text class="form-label required">故障现象</text>
-          <textarea class="form-textarea" placeholder="详细描述故障现象和问题..." value="{{formData.faultPhenomenon}}" bindinput="onFaultPhenomenonInput" maxlength="500"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="详细描述故障现象和问题..." value="{{formData.faultPhenomenon}}" bindinput="onFaultPhenomenonInput" maxlength="500"></textarea>
           <text class="char-count">{{formData.faultPhenomenon.length}}/500</text>
         </view>
 
@@ -444,7 +444,7 @@
         <!-- 官方回应 -->
         <view class="form-group">
           <text class="form-label">官方回应</text>
-          <textarea class="form-textarea" placeholder="记录客服或售后反馈..." value="{{formData.officialResponse}}" bindinput="onOfficialResponseInput" maxlength="500"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="记录客服或售后反馈..." value="{{formData.officialResponse}}" bindinput="onOfficialResponseInput" maxlength="500"></textarea>
           <text class="char-count">{{formData.officialResponse.length}}/500</text>
         </view>
       </block>
@@ -463,11 +463,11 @@
         <!-- 转让说明 -->
         <view class="transfer-info-tips">
           <view class="transfer-tip-item">
-            <text class="transfer-tip-icon">📋</text>
+            <view class="transfer-tip-dot"></view>
             <text class="transfer-tip-text">新仓库将自动复制所有时间线事件，保留完整的物品档案</text>
           </view>
           <view class="transfer-tip-item">
-            <text class="transfer-tip-icon">🔗</text>
+            <view class="transfer-tip-dot"></view>
             <text class="transfer-tip-text">自动建立Fork关系，可追溯完整流转链路</text>
           </view>
         </view>
@@ -503,7 +503,7 @@
           <text class="form-label required">转让价格</text>
           <view class="price-input-wrapper">
             <text class="currency-symbol">¥</text>
-            <input class="price-input" type="digit" placeholder="0.00" value="{{formData.transferPrice}}" bindinput="onTransferPriceInput" />
+            <input class="price-input" type="digit" placeholder-class="ph" placeholder="0.00" value="{{formData.transferPrice}}" bindinput="onTransferPriceInput" />
           </view>
           <text class="form-hint">记录转让价格，方便后续评估保值率</text>
         </view>
@@ -524,13 +524,13 @@
         <!-- 配件情况 -->
         <view class="form-group">
           <text class="form-label">配件情况</text>
-          <input class="form-input" placeholder="如：原装充电器、数据线、说明书、包装盒" value="{{formData.transferAccessories}}" bindinput="onTransferAccessoriesInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="如：原装充电器、数据线、说明书、包装盒" value="{{formData.transferAccessories}}" bindinput="onTransferAccessoriesInput" />
         </view>
 
         <!-- 转让原因 -->
         <view class="form-group">
           <text class="form-label">转让原因</text>
-          <textarea class="form-textarea" placeholder="如实记录转让原因..." value="{{formData.transferReason}}" bindinput="onTransferReasonInput" maxlength="300"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="如实记录转让原因..." value="{{formData.transferReason}}" bindinput="onTransferReasonInput" maxlength="300"></textarea>
           <text class="char-count">{{formData.transferReason.length}}/300</text>
         </view>
 
@@ -550,14 +550,14 @@
         <!-- 给下一位主人的寄语 -->
         <view class="form-group">
           <text class="form-label">对下一个主人的寄语</text>
-          <textarea class="form-textarea" placeholder="分享使用心得、注意事项或美好祝愿..." value="{{formData.transferMessage}}" bindinput="onTransferMessageInput" maxlength="500"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="分享使用心得、注意事项或美好祝愿..." value="{{formData.transferMessage}}" bindinput="onTransferMessageInput" maxlength="500"></textarea>
           <text class="char-count">{{formData.transferMessage.length}}/500</text>
         </view>
 
         <!-- 使用建议 -->
         <view class="form-group">
           <text class="form-label">使用建议</text>
-          <textarea class="form-textarea" placeholder="分享使用技巧、注意事项等..." value="{{formData.transferTips}}" bindinput="onTransferTipsInput" maxlength="500"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="分享使用技巧、注意事项等..." value="{{formData.transferTips}}" bindinput="onTransferTipsInput" maxlength="500"></textarea>
           <text class="char-count">{{formData.transferTips.length}}/500</text>
         </view>
 
@@ -667,7 +667,7 @@
           <text class="form-label">实付金额</text>
           <view class="price-input-wrapper">
             <text class="currency-symbol">¥</text>
-            <input class="price-input" type="digit" placeholder="0.00" value="{{formData.amountPaid}}" bindinput="onAmountPaidInput" />
+            <input class="price-input" type="digit" placeholder-class="ph" placeholder="0.00" value="{{formData.amountPaid}}" bindinput="onAmountPaidInput" />
           </view>
         </view>
 
@@ -696,15 +696,12 @@
           <text class="form-label required">总体评价</text>
           <view class="radio-group">
             <view class="radio-item {{overallRatingIndex === 0 ? 'active' : ''}}" bindtap="onOverallRatingTap" data-index="0">
-              <text class="radio-icon">👍</text>
               <text class="radio-label">推荐</text>
             </view>
             <view class="radio-item {{overallRatingIndex === 1 ? 'active' : ''}}" bindtap="onOverallRatingTap" data-index="1">
-              <text class="radio-icon">👌</text>
               <text class="radio-label">一般</text>
             </view>
             <view class="radio-item {{overallRatingIndex === 2 ? 'active' : ''}}" bindtap="onOverallRatingTap" data-index="2">
-              <text class="radio-icon">👎</text>
               <text class="radio-label">不推荐</text>
             </view>
           </view>
@@ -748,26 +745,26 @@
           <text class="form-label">人均消费</text>
           <view class="price-input-wrapper">
             <text class="currency-symbol">¥</text>
-            <input class="price-input" type="digit" placeholder="0" value="{{formData.perCapitaCost}}" bindinput="onPerCapitaCostInput" />
+            <input class="price-input" type="digit" placeholder-class="ph" placeholder="0" value="{{formData.perCapitaCost}}" bindinput="onPerCapitaCostInput" />
           </view>
         </view>
 
         <!-- 推荐菜品 -->
         <view class="form-group">
           <text class="form-label">推荐菜品</text>
-          <input class="form-input" placeholder="多个菜品用逗号分隔，如：毛血旺,杨枝甘露" value="{{formData.recommendedDishes}}" bindinput="onRecommendedDishesInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="多个菜品用逗号分隔，如：毛血旺,杨枝甘露" value="{{formData.recommendedDishes}}" bindinput="onRecommendedDishesInput" />
         </view>
 
         <!-- 踩雷菜品 -->
         <view class="form-group">
           <text class="form-label">踩雷菜品</text>
-          <input class="form-input" placeholder="多个菜品用逗号分隔" value="{{formData.dislikedDishes}}" bindinput="onDislikedDishesInput" />
+          <input class="form-input" placeholder-class="ph" placeholder="多个菜品用逗号分隔" value="{{formData.dislikedDishes}}" bindinput="onDislikedDishesInput" />
         </view>
 
         <!-- 详细评价 -->
         <view class="form-group">
           <text class="form-label">详细评价</text>
-          <textarea class="form-textarea" placeholder="分享你的用餐体验..." value="{{formData.detailReview}}" bindinput="onDetailReviewInput" maxlength="1500"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="分享你的用餐体验..." value="{{formData.detailReview}}" bindinput="onDetailReviewInput" maxlength="1500"></textarea>
           <text class="char-count">{{formData.detailReview.length}}/1500</text>
         </view>
 
@@ -807,7 +804,7 @@
         <!-- 变更描述 -->
         <view class="form-group">
           <text class="form-label required">变更描述</text>
-          <textarea class="form-textarea" placeholder="详细描述变更内容..." value="{{formData.changeDescription}}" bindinput="onChangeDescriptionInput" maxlength="1000"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="详细描述变更内容..." value="{{formData.changeDescription}}" bindinput="onChangeDescriptionInput" maxlength="1000"></textarea>
           <text class="char-count">{{formData.changeDescription.length}}/1000</text>
         </view>
 
@@ -834,7 +831,7 @@
         <!-- 想去的理由 -->
         <view class="form-group">
           <text class="form-label required">想去的理由</text>
-          <textarea class="form-textarea" placeholder="为什么想去这个地方..." value="{{formData.reason}}" bindinput="onReasonInput" maxlength="500"></textarea>
+          <textarea class="form-textarea" placeholder-class="ph" placeholder="为什么想去这个地方..." value="{{formData.reason}}" bindinput="onReasonInput" maxlength="500"></textarea>
           <text class="char-count">{{formData.reason.length}}/500</text>
         </view>
 

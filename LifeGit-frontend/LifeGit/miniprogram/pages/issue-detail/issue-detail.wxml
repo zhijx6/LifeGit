@@ -50,9 +50,6 @@
         <view class="commit-refs" wx:if="{{bestAnswer.commitRefs.length > 0}}">
           <text class="refs-title">引用记录</text>
           <view class="ref-item" wx:for="{{bestAnswer.commitRefs}}" wx:for-item="commitRef" wx:key="id">
-            <view class="ref-icon-wrapper {{commitRef.type}}">
-              <text class="ref-icon">{{commitRef.icon}}</text>
-            </view>
             <view class="ref-content">
               <text class="ref-type">{{commitRef.typeText}}</text>
               <text class="ref-desc">{{commitRef.description}}</text>
@@ -63,7 +60,7 @@
         <view class="answer-meta">
           <text class="answer-time">{{bestAnswer.createTime}}</text>
           <view class="answer-actions">
-            <text class="action-item">👍 {{bestAnswer.likeCount}}</text>
+            <text class="action-item">赞同 {{bestAnswer.likeCount}}</text>
           </view>
         </view>
       </view>
@@ -87,9 +84,6 @@
             <!-- Commit引用 -->
             <view class="commit-refs" wx:if="{{item.commitRefs.length > 0}}">
               <view class="ref-item" wx:for="{{item.commitRefs}}" wx:for-item="commitRef" wx:key="id">
-                <view class="ref-icon-wrapper {{commitRef.type}}">
-                  <text class="ref-icon">{{commitRef.icon}}</text>
-                </view>
                 <view class="ref-content">
                   <text class="ref-type">{{commitRef.typeText}}</text>
                   <text class="ref-desc">{{commitRef.description}}</text>
@@ -100,7 +94,7 @@
             <view class="answer-footer">
               <view class="answer-actions">
                 <text class="action-btn" bindtap="likeAnswer" data-id="{{item.id}}">
-                  <text class="action-icon">{{item.isLiked ? '❤️' : '🤍'}}</text>
+                  <text class="action-icon">{{item.isLiked ? '◉' : '○'}}</text>
                   <text class="action-count">{{item.likeCount}}</text>
                 </text>
               </view>
@@ -117,7 +111,6 @@
       <!-- 空状态 -->
       <block wx:else>
         <view class="empty-answers">
-          <text class="empty-icon">💬</text>
           <text class="empty-text">还没有回答</text>
           <text class="empty-hint">成为第一个回答的人吧</text>
         </view>
@@ -130,6 +123,7 @@
         <textarea
           class="reply-input"
           placeholder="回答问题，可以@用户或引用记录..."
+          placeholder-class="ph"
           value="{{replyText}}"
           bindinput="onReplyInput"
           maxlength="500"
@@ -154,7 +148,7 @@
   <view class="modal-content" catchtap="stopPropagation">
     <view class="modal-header">
       <text class="modal-title">@提醒用户</text>
-      <text class="modal-close" bindtap="hideAtModal">✕</text>
+      <text class="modal-close" bindtap="hideAtModal">×</text>
     </view>
     <view class="modal-body">
       <view class="user-list">
@@ -176,14 +170,11 @@
   <view class="modal-content" catchtap="stopPropagation">
     <view class="modal-header">
       <text class="modal-title">引用记录</text>
-      <text class="modal-close" bindtap="hideCommitModal">✕</text>
+      <text class="modal-close" bindtap="hideCommitModal">×</text>
     </view>
     <view class="modal-body">
       <view class="commit-list">
         <view class="commit-item {{selectedCommit === item.id ? 'active' : ''}}" wx:for="{{availableCommits}}" wx:key="id" bindtap="selectCommit" data-id="{{item.id}}">
-          <view class="commit-icon-wrapper {{item.type}}">
-            <text class="commit-icon">{{item.icon}}</text>
-          </view>
           <view class="commit-info">
             <text class="commit-type">{{item.type}}</text>
             <text class="commit-desc">{{item.description}}</text>
