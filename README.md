@@ -29,7 +29,7 @@ Nginx (80)  ──  阿里云 ECS (118.31.38.183)
         ▼
 Gunicorn (3 workers × 4 threads, gthread, timeout 120s)
         ▼
-Flask 应用 (app.py, 约 1300 行, 36+ API)
+Flask 应用 (app.py, 约 1700 行, 44 个 API)
         ▼
 MySQL 8 (7 张表: user / repo / event / transfer / issue / mention / reply)
 ```
@@ -51,6 +51,11 @@ LifeGit/
 │   ├── migration_fork.sql       # 转让/fork 功能增量迁移
 │   ├── deploy.sh                # 服务器一键部署脚本
 │   ├── start.ps1                # Windows 本地启动脚本
+│   ├── API_GUIDE.md             # 后端 API 手册
+│   ├── EVENT_API_GUIDE.md       # 事件 API 专项手册
+│   ├── ADVANCED_FEATURES.md     # 高级功能说明
+│   ├── 快速启动指南.txt          # Windows 本地启动手册（新手向）
+│   ├── 服务器部署指南.txt        # 阿里云部署手册
 │   ├── services/                # 业务服务层
 │   │   ├── auth_service.py      # 认证
 │   │   ├── event_service.py     # 事件
@@ -64,7 +69,7 @@ LifeGit/
         ├── miniprogram/
         │   ├── utils/api.js     # API 封装层（40+ 函数，统一 401 处理）
         │   └── pages/           # 18 个页面
-        │       ├── login / my / change-password / mentions
+        │       ├── login / my / change-password / mentions / logs（模板遗留）
         │       ├── index（创建仓库）/ repo-detail
         │       ├── add-event / event-form / event-detail
         │       ├── nlp-input / nlp-result（AI 建仓）
@@ -79,9 +84,11 @@ LifeGit/
 ### 1. 准备数据库（MySQL 8 / MariaDB）
 
 ```bash
-mysql -u root -p < database/lifegit.sql
-# 或分别执行：
+# 推荐：schema.sql 已包含全部 7 张表（含转让/fork 功能），一步到位
 mysql -u root -p < LifeGit-backend/schema.sql
+
+# 或使用早期全量转储（⚠️ 缺 transfer 表和 fork 字段，必须补跑迁移）：
+mysql -u root -p < database/lifegit.sql
 mysql -u root -p < LifeGit-backend/migration_fork.sql
 ```
 
