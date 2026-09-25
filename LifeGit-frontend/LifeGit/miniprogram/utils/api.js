@@ -1,16 +1,16 @@
 // utils/api.js
 // LifeGit 后端 API 对接层
 // 后端响应格式: { code: 0, message: "ok", data: {...} }
-var BASE_URL = 'http://localhost:5000';
+var BASE_URL = 'http://118.31.38.183';
 
-var request = function(url, method, data) {
+var request = function(url, method, data, timeout) {
   method = method || 'GET';
   return new Promise(function(resolve, reject) {
     var token = wx.getStorageSync('token');
     var opts = {
       url: BASE_URL + url,
       method: method,
-      timeout: 10000,
+      timeout: timeout || 30000,
       header: {
         'Content-Type': 'application/json',
         'Authorization': token ? ('Bearer ' + token) : ''
@@ -70,7 +70,7 @@ var confirmScanRepo = function(data) {
   return request('/api/repo/confirm_scan', 'POST', data);
 };
 var nlpAnalyze = function(text) {
-  return request('/api/repo/nlp_analyze', 'POST', { text: text });
+  return request('/api/repo/nlp_analyze', 'POST', { text: text }, 60000);
 };
 var confirmNlpRepo = function(data) {
   return request('/api/repo/confirm_nlp', 'POST', data);
@@ -121,14 +121,14 @@ var getRepoDetail = function(repoId) {
       description: repo.description || ''
     };
     var typeIcons = {
-      purchase: '\u{1F6D2}', maintenance: '\u{1F527}', upgrade: '⬆️',
-      experience: '\u{1F4AD}', memory: '\u{1F496}', fault: '⚠️', transfer: '\u{1F504}'
+      purchase: '🛒', maintenance: '🔧', upgrade: '⬆️',
+      experience: '💭', memory: '💖', fault: '⚠️', transfer: '🔄'
     };
     var events = (data.timeline || []).map(function(e) {
       return {
         id: e.id,
         type: e.event_type,
-        icon: typeIcons[e.event_type] || '\u{1F4DD}',
+        icon: typeIcons[e.event_type] || '📝',
         typeClass: e.event_type,
         description: e.description || '',
         content: e.content || {},
@@ -303,6 +303,23 @@ var uploadDocument = function(filePath) {
   });
 };
 
+// Fork / 转让
+var initiateTransfer = function(repoId, data) {
+  return request('/api/repos/' + repoId + '/transfer/initiate', 'POST', data);
+};
+var getTransferInfo = function(transferCode) {
+  return request('/api/transfer/' + transferCode);
+};
+var acceptTransfer = function(transferCode, data) {
+  return request('/api/transfer/' + transferCode + '/accept', 'POST', data);
+};
+var declineTransfer = function(transferCode) {
+  return request('/api/transfer/' + transferCode + '/decline', 'POST');
+};
+var getForkGraph = function(repoId) {
+  return request('/api/repos/' + repoId + '/fork-graph');
+};
+
 module.exports = {
   authLogin: authLogin,
   authRegister: authRegister,
@@ -338,5 +355,10 @@ module.exports = {
   readAllMentions: readAllMentions,
   uploadImage: uploadImage,
   uploadImages: uploadImages,
-  uploadDocument: uploadDocument
+  uploadDocument: uploadDocument,
+  initiateTransfer: initiateTransfer,
+  getTransferInfo: getTransferInfo,
+  acceptTransfer: acceptTransfer,
+  declineTransfer: declineTransfer,
+  getForkGraph: getForkGraph
 };

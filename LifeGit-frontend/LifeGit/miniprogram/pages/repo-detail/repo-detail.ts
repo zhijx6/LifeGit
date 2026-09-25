@@ -69,11 +69,16 @@ Page({
   },
 
   initiateTransfer() {
-    wx.navigateTo({ url: '/pages/event-form/event-form?type=transfer&repoId=' + this.data.repoId })
+    const repoType = this.data.repoInfo.type || 'item'
+    if (repoType === 'place') {
+      wx.showToast({ title: '地点型仓库不支持转让', icon: 'none' })
+      return
+    }
+    wx.navigateTo({ url: '/pages/transfer-initiate/transfer-initiate?repoId=' + this.data.repoId })
   },
 
   showForkGraph() {
-    wx.navigateTo({ url: '/pages/fork-graph/fork-graph?repoId=' + this.data.repoId })
+    wx.navigateTo({ url: '/pages/fork-graph/fork-graph?id=' + this.data.repoId })
   },
 
   deleteRepo() {

@@ -3,9 +3,6 @@
   <view class="container">
     <!-- 头部说明 -->
     <view class="header-section">
-      <view class="icon-wrapper">
-        <text class="header-icon">🌳</text>
-      </view>
       <text class="header-title">物品流转链路</text>
       <text class="header-desc">完整追溯物品的所有权变更历史</text>
     </view>
@@ -48,9 +45,6 @@
           <view class="tree-node root-node">
             <view class="node-avatar-wrapper">
               <image class="node-avatar" src="{{rootNode.ownerAvatar}}" mode="aspectFill"></image>
-              <view class="node-badge root-badge">
-                <text class="badge-icon">🌱</text>
-              </view>
             </view>
             <view class="node-content">
               <text class="node-name">{{rootNode.ownerName}}</text>
@@ -72,9 +66,6 @@
               <view class="node-connector-top"></view>
               <view class="node-avatar-wrapper">
                 <image class="node-avatar" src="{{item.ownerAvatar}}" mode="aspectFill"></image>
-                <view class="node-badge transfer-badge">
-                  <text class="badge-icon">🔄</text>
-                </view>
               </view>
               <view class="node-content">
                 <text class="node-name">{{item.ownerName}}</text>
@@ -99,9 +90,6 @@
             <view class="node-connector-top"></view>
             <view class="node-avatar-wrapper">
               <image class="node-avatar" src="{{currentRepo.ownerAvatar}}" mode="aspectFill"></image>
-              <view class="node-badge current-badge">
-                <text class="badge-icon">⭐</text>
-              </view>
             </view>
             <view class="node-content">
               <text class="node-name">{{currentRepo.owner}}</text>
@@ -139,15 +127,15 @@
     <!-- 操作提示 -->
     <view class="tips-section">
       <view class="tip-item">
-        <text class="tip-icon">💡</text>
+        <view class="tip-dot"></view>
         <text class="tip-text">每个节点都完整继承了之前的历史记录</text>
       </view>
       <view class="tip-item">
-        <text class="tip-icon">🔗</text>
+        <view class="tip-dot"></view>
         <text class="tip-text">点击节点可以查看该时期的详细记录</text>
       </view>
       <view class="tip-item">
-        <text class="tip-icon">✨</text>
+        <view class="tip-dot"></view>
         <text class="tip-text">物品的所有变更都会被永久记录</text>
       </view>
     </view>

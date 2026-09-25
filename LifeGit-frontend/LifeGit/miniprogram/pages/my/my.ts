@@ -58,6 +58,29 @@ Page({
     wx.navigateTo({ url: '/pages/change-password/change-password' })
   },
 
+  /**
+   * 领取转让:输入转让码进入接收页
+   */
+  receiveTransfer() {
+    wx.showModal({
+      title: '领取转让',
+      content: '请输入对方发给你的转让码(TF开头)',
+      editable: true,
+      placeholderText: 'TFxxxxxxxx',
+      confirmText: '下一步',
+      success: (res) => {
+        if (res.confirm) {
+          const code = (res.content || '').trim().toUpperCase()
+          if (!code) {
+            wx.showToast({ title: '请输入转让码', icon: 'none' })
+            return
+          }
+          wx.navigateTo({ url: '/pages/transfer-receive/transfer-receive?code=' + code })
+        }
+      }
+    })
+  },
+
   showEditNickname() {
     this.setData({ showNicknameModal: true, newNickname: this.data.nickname })
   },

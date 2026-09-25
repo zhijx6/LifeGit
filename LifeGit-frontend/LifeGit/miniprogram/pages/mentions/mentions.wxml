@@ -8,6 +8,7 @@
 
     <!-- 提醒列表 -->
     <block wx:if="{{mentions.length > 0}}">
+      <view class="mentions-card">
       <view class="mention-item {{item.is_read ? '' : 'unread'}}" wx:for="{{mentions}}" wx:key="id" bindtap="goToIssue" data-issue-id="{{item.issue_id}}">
         <view class="mention-dot" wx:if="{{!item.is_read}}"></view>
         <view class="mention-content">
@@ -19,11 +20,11 @@
         </view>
         <text class="mention-arrow">›</text>
       </view>
+      </view>
     </block>
 
     <!-- 空状态 -->
     <view class="empty-state" wx:if="{{!loading && mentions.length === 0}}">
-      <text class="empty-icon">🔔</text>
       <text class="empty-text">暂无@提醒</text>
     </view>
 

@@ -47,7 +47,6 @@
       <!-- 空状态 -->
       <block wx:else>
         <view class="empty-state">
-          <text class="empty-icon">📦</text>
           <text class="empty-text">还没有仓库</text>
           <text class="empty-hint">点击「创建仓库」添加第一个仓库</text>
           <button class="go-create-btn" bindtap="goToCreate">去创建</button>
@@ -62,13 +61,18 @@
 
     <!-- 设置入口 -->
     <view class="settings-section">
+      <view class="settings-item" bindtap="receiveTransfer">
+        <view class="settings-icon-svg icon-lock"></view>
+        <text class="settings-label">领取转让</text>
+        <text class="settings-arrow">›</text>
+      </view>
       <view class="settings-item" bindtap="goToChangePassword">
-        <text class="settings-icon">🔒</text>
+        <view class="settings-icon-svg icon-lock"></view>
         <text class="settings-label">修改密码</text>
         <text class="settings-arrow">›</text>
       </view>
       <view class="settings-item" bindtap="logout">
-        <text class="settings-icon">🚪</text>
+        <view class="settings-icon-svg icon-logout"></view>
         <text class="settings-label">退出登录</text>
         <text class="settings-arrow">›</text>
       </view>
@@ -82,7 +86,7 @@
           <text class="modal-close" bindtap="hideEditNickname">✕</text>
         </view>
         <view class="modal-body">
-          <input class="nickname-input" placeholder="请输入新昵称" value="{{newNickname}}" bindinput="onNicknameInput" maxlength="20" />
+          <input class="nickname-input" placeholder="请输入新昵称" placeholder-class="ph" value="{{newNickname}}" bindinput="onNicknameInput" maxlength="20" />
         </view>
         <view class="modal-footer">
           <button class="modal-btn" bindtap="hideEditNickname">取消</button>

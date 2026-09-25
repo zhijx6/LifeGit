@@ -80,9 +80,12 @@ Page({
 
   previewImage(e: any) {
     const url = e.currentTarget.dataset.url
-    const images = this.data.fields
-      .filter((f: any) => f.type === 'images' && f.value)
-      .flatMap((f: any) => f.value)
+    const images: any[] = []
+    this.data.fields.forEach((f: any) => {
+      if (f.type === 'images' && f.value) {
+        f.value.forEach((v: string) => images.push(v))
+      }
+    })
     wx.previewImage({ current: url, urls: images })
   },
 

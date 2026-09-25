@@ -3,7 +3,7 @@
   <view class="container">
     <!-- 成功提示 -->
     <view class="success-banner">
-      <text class="success-icon">✨</text>
+      <text class="success-icon">✓</text>
       <view class="success-text">
         <text class="success-title">AI分析完成</text>
         <text class="success-desc">已成功识别关键信息</text>
@@ -21,9 +21,6 @@
       <text class="section-title">识别的实体</text>
       <view class="entities-list">
         <view class="entity-item" wx:for="{{entities}}" wx:key="id">
-          <view class="entity-icon-wrapper {{entityType.class}}">
-            <text class="entity-icon">{{entityType.icon}}</text>
-          </view>
           <view class="entity-content">
             <text class="entity-label">{{entityType.label}}</text>
             <text class="entity-value">{{item.value}}</text>
@@ -40,9 +37,6 @@
       <text class="section-title">建议分类</text>
       <view class="category-recommendation">
         <view class="category-main">
-          <view class="category-icon-wrapper">
-            <text class="category-icon">{{recommendedCategory.icon}}</text>
-          </view>
           <view class="category-info">
             <text class="category-name">{{recommendedCategory.name}}</text>
             <text class="category-desc">{{recommendedCategory.desc}}</text>

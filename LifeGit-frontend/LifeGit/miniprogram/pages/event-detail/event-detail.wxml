@@ -1,7 +1,6 @@
 <scroll-view class="scrollarea" scroll-y>
   <view class="container">
     <view class="event-header">
-      <text class="event-icon">{{eventIcon}}</text>
       <text class="event-type-name">{{eventTypeName}}</text>
       <text class="event-time">{{eventTime}}</text>
     </view>

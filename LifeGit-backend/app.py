@@ -4,6 +4,7 @@ from werkzeug.utils import secure_filename
 import json
 import os
 import uuid
+from datetime import datetime
 from utils.db import execute_query, execute_insert, execute_update
 from services.product_api_service import ProductAPIService
 from services.nlp_service import NLPService
@@ -19,7 +20,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024  # 50MB max upload
 
 product_api = ProductAPIService(api_provider='mock')
-nlp_service = NLPService(api_provider='local')
+nlp_service = NLPService(api_provider='aliyun')
 file_service = FileService(upload_folder=UPLOAD_FOLDER)
 
 
@@ -246,13 +247,13 @@ def get_my_repos():
 
         sql = """
             SELECT * FROM repo
-            WHERE creator_id = %s
+            WHERE creator_id = %s AND status = 'active'
             ORDER BY create_time DESC
             LIMIT %s OFFSET %s
         """
         repos = execute_query(sql, (request.current_user_id, page_size, offset))
 
-        count_sql = "SELECT COUNT(*) as total FROM repo WHERE creator_id = %s"
+        count_sql = "SELECT COUNT(*) as total FROM repo WHERE creator_id = %s AND status = 'active'"
         count_result = execute_query(count_sql, (request.current_user_id,))
         total = count_result[0]['total'] if count_result else 0
 
@@ -1186,6 +1187,11 @@ def cancel_best_answer(reply_id):
             return jsonify({'code': 404, 'message': '回复不存在'})
 
         execute_update("UPDATE reply SET is_best_answer = 0 WHERE id = %s", (reply_id,))
+
+        return jsonify({
+            'code': 0,
+            'message': '已取消最佳答案'
+        })
     except Exception as e:
         return jsonify({'code': 500, 'message': str(e)})
 
@@ -1296,6 +1302,359 @@ def get_repo_participants(repo_id):
         return jsonify({
             'code': 0,
             'data': users
+        })
+    except Exception as e:
+        return jsonify({'code': 500, 'message': str(e)})
+
+
+# ==================== Fork / 转让 相关API ====================
+
+@app.route('/api/repos/<int:repo_id>/transfer/initiate', methods=['POST'])
+@login_required
+def initiate_transfer(repo_id):
+    """发起转让:生成transfer_code,可选创建transfer事件"""
+    try:
+        # 验证仓库存在、属于当前用户、类型为item
+        repo = execute_query("SELECT * FROM repo WHERE id = %s", (repo_id,))
+        if not repo:
+            return jsonify({'code': 404, 'message': '仓库不存在'})
+        repo = repo[0]
+        if repo['creator_id'] != request.current_user_id:
+            return jsonify({'code': 403, 'message': '无权转让此仓库'})
+        if repo['type'] == 'place':
+            return jsonify({'code': 400, 'message': '地点型仓库不支持转让'})
+        if repo['status'] == 'transferred':
+            return jsonify({'code': 400, 'message': '该仓库已转让'})
+
+        data = request.json or {}
+        message = data.get('message', '').strip()
+        auto_create_event = data.get('auto_create_event', True)
+
+        # 生成唯一transfer_code
+        transfer_code = 'TF' + uuid.uuid4().hex[:24].upper()
+
+        # 插入transfer记录
+        transfer_id = execute_insert(
+            """INSERT INTO transfer (repo_id, from_user_id, transfer_code, status, message)
+               VALUES (%s, %s, %s, 'pending', %s)""",
+            (repo_id, request.current_user_id, transfer_code, message or None)
+        )
+
+        # 可选:创建transfer事件
+        if auto_create_event:
+            event_data = {
+                'transfer_date': datetime.now().strftime('%Y-%m-%d'),
+                'transfer_type': 'gift',
+                'transfer_reason': message or '物品转让',
+                'transfer_channel': '线上转让'
+            }
+            execute_insert(
+                """INSERT INTO event (repo_id, event_type, content, user_id)
+                   VALUES (%s, 'transfer', %s, %s)""",
+                (repo_id, json.dumps(event_data, ensure_ascii=False), request.current_user_id)
+            )
+
+        return jsonify({
+            'code': 0,
+            'message': '转让已发起',
+            'data': {
+                'transfer_id': transfer_id,
+                'transfer_code': transfer_code,
+                'transfer_link': f'/pages/transfer-receive/transfer-receive?code={transfer_code}'
+            }
+        })
+    except Exception as e:
+        return jsonify({'code': 500, 'message': str(e)})
+
+
+@app.route('/api/transfer/<transfer_code>', methods=['GET'])
+@login_required
+def get_transfer_info(transfer_code):
+    """获取转让信息:仓库+原主人+继承事件列表"""
+    try:
+        # 查询transfer记录
+        transfer = execute_query(
+            """SELECT t.*, u.nickname as from_user_name, u.id as from_user_id
+               FROM transfer t JOIN user u ON t.from_user_id = u.id
+               WHERE t.transfer_code = %s""",
+            (transfer_code,)
+        )
+        if not transfer:
+            return jsonify({'code': 404, 'message': '转让链接无效'})
+        transfer = transfer[0]
+
+        if transfer['status'] != 'pending':
+            return jsonify({'code': 400, 'message': f"该转让已{transfer['status']}"})
+
+        # 查询仓库信息
+        repo = execute_query("SELECT * FROM repo WHERE id = %s", (transfer['repo_id'],))
+        if not repo:
+            return jsonify({'code': 404, 'message': '仓库不存在'})
+        repo = repo[0]
+
+        # 查询继承的事件列表
+        events = execute_query(
+            "SELECT * FROM event WHERE repo_id = %s ORDER BY create_time ASC",
+            (transfer['repo_id'],)
+        )
+
+        return jsonify({
+            'code': 0,
+            'data': {
+                'transfer_id': transfer['id'],
+                'transfer_code': transfer['transfer_code'],
+                'message': transfer['message'],
+                'repo': repo,
+                'original_owner': {
+                    'id': transfer['from_user_id'],
+                    'name': transfer['from_user_name']
+                },
+                'inherited_events': events
+            }
+        })
+    except Exception as e:
+        return jsonify({'code': 500, 'message': str(e)})
+
+
+@app.route('/api/transfer/<transfer_code>/accept', methods=['POST'])
+@login_required
+def accept_transfer(transfer_code):
+    """接收转让:创建fork仓库,复制全部事件,原仓库状态→transferred"""
+    try:
+        # 查询transfer记录
+        transfer = execute_query(
+            "SELECT * FROM transfer WHERE transfer_code = %s AND status = 'pending'",
+            (transfer_code,)
+        )
+        if not transfer:
+            return jsonify({'code': 404, 'message': '转让链接无效或已处理'})
+        transfer = transfer[0]
+
+        # 不能接收自己的转让
+        if transfer['from_user_id'] == request.current_user_id:
+            return jsonify({'code': 400, 'message': '不能接收自己的转让'})
+
+        # 查询原仓库
+        repo = execute_query("SELECT * FROM repo WHERE id = %s", (transfer['repo_id'],))
+        if not repo:
+            return jsonify({'code': 404, 'message': '仓库不存在'})
+        repo = repo[0]
+
+        data = request.json or {}
+        receiver_name = data.get('receiver_name', '').strip()
+        auto_create_event = data.get('auto_create_event', True)
+
+        # 1. 创建fork仓库(继承原仓库信息)
+        new_repo_id = execute_insert(
+            """INSERT INTO repo (product_name, brand, model, specification, main_image,
+                name, type, description, cover_image, creator_id,
+                parent_repo_id, fork_depth, status)
+               VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 'active')""",
+            (repo['product_name'], repo['brand'], repo['model'], repo['specification'],
+             repo['main_image'], receiver_name or repo['name'], repo['type'],
+             repo['description'], repo['cover_image'], request.current_user_id,
+             repo['id'], repo['fork_depth'] + 1)
+        )
+
+        # 2. 复制原仓库的全部事件到新仓库
+        events = execute_query(
+            "SELECT * FROM event WHERE repo_id = %s", (transfer['repo_id'],)
+        )
+        for ev in events:
+            execute_insert(
+                """INSERT INTO event (repo_id, event_type, content, images, user_id, create_time)
+                   VALUES (%s, %s, %s, %s, %s, %s)""",
+                (new_repo_id, ev['event_type'], ev['content'],
+                 ev['images'], request.current_user_id, ev['create_time'])
+            )
+
+        # 3. 原仓库状态改为transferred
+        execute_update(
+            "UPDATE repo SET status = 'transferred' WHERE id = %s",
+            (transfer['repo_id'],)
+        )
+
+        # 4. transfer记录状态改为accepted
+        execute_update(
+            """UPDATE transfer SET status = 'accepted', to_user_id = %s,
+               new_repo_id = %s, accepted_at = NOW() WHERE id = %s""",
+            (request.current_user_id, new_repo_id, transfer['id'])
+        )
+
+        # 5. 可选:在新仓库创建transfer事件
+        if auto_create_event:
+            event_data = {
+                'transfer_date': datetime.now().strftime('%Y-%m-%d'),
+                'transfer_type': 'gift',
+                'transfer_reason': transfer['message'] or '接收转让',
+                'transfer_channel': '线上转让'
+            }
+            execute_insert(
+                """INSERT INTO event (repo_id, event_type, content, user_id)
+                   VALUES (%s, 'transfer', %s, %s)""",
+                (new_repo_id, json.dumps(event_data, ensure_ascii=False), request.current_user_id)
+            )
+
+        return jsonify({
+            'code': 0,
+            'message': '接收成功',
+            'data': {'new_repo_id': new_repo_id}
+        })
+    except Exception as e:
+        return jsonify({'code': 500, 'message': str(e)})
+
+
+@app.route('/api/transfer/<transfer_code>/decline', methods=['POST'])
+@login_required
+def decline_transfer(transfer_code):
+    """拒绝转让"""
+    try:
+        transfer = execute_query(
+            "SELECT * FROM transfer WHERE transfer_code = %s AND status = 'pending'",
+            (transfer_code,)
+        )
+        if not transfer:
+            return jsonify({'code': 404, 'message': '转让链接无效或已处理'})
+        transfer = transfer[0]
+
+        execute_update(
+            "UPDATE transfer SET status = 'declined', to_user_id = %s, accepted_at = NOW() WHERE id = %s",
+            (request.current_user_id, transfer['id'])
+        )
+
+        return jsonify({'code': 0, 'message': '已拒绝转让'})
+    except Exception as e:
+        return jsonify({'code': 500, 'message': str(e)})
+
+
+@app.route('/api/repos/<int:repo_id>/fork-graph', methods=['GET'])
+@login_required
+def get_fork_graph(repo_id):
+    """获取fork关系图:根节点+中间节点+统计"""
+    try:
+        # 验证仓库存在
+        repo = execute_query("SELECT * FROM repo WHERE id = %s", (repo_id,))
+        if not repo:
+            return jsonify({'code': 404, 'message': '仓库不存在'})
+        repo = repo[0]
+
+        # 地点型仓库不支持fork
+        if repo['type'] == 'place':
+            return jsonify({'code': 400, 'message': '地点型仓库无fork图谱'})
+
+        # 1. 找到根仓库(沿parent_repo_id往上找)
+        root_repo = repo
+        while root_repo['parent_repo_id']:
+            parent = execute_query("SELECT * FROM repo WHERE id = %s", (root_repo['parent_repo_id'],))
+            if not parent:
+                break
+            root_repo = parent[0]
+
+        # 2. 查询所有fork后代(包括当前仓库),用递归方式
+        all_nodes = []
+        def collect_descendants(parent_id):
+            children = execute_query(
+                """SELECT r.*, u.nickname as owner_name
+                   FROM repo r JOIN user u ON r.creator_id = u.id
+                   WHERE r.parent_repo_id = %s""",
+                (parent_id,)
+            )
+            for child in children:
+                all_nodes.append(child)
+                collect_descendants(child['id'])
+
+        # 收集根节点的所有后代
+        collect_descendants(root_repo['id'])
+
+        # 3. 构建根节点信息
+        root_owner = execute_query(
+            "SELECT nickname, avatar FROM user WHERE id = %s", (root_repo['creator_id'],)
+        )
+        root_node = {
+            'id': root_repo['id'],
+            'ownerName': root_owner[0]['nickname'] if root_owner else '未知',
+            'ownerAvatar': root_owner[0]['avatar'] if root_owner and root_owner[0]['avatar'] else '',
+            'createdAt': root_repo['create_time'].strftime('%Y-%m-%d') if root_repo['create_time'] else None
+        }
+
+        # 4. 构建中间节点(排除根节点,按fork链顺序)
+        intermediate_nodes = []
+        for node in all_nodes:
+            if node['id'] == repo_id:
+                continue
+            owner = execute_query(
+                "SELECT nickname, avatar FROM user WHERE id = %s", (node['creator_id'],)
+            )
+            from_owner = execute_query(
+                """SELECT u.nickname FROM repo r JOIN user u ON r.creator_id = u.id
+                   WHERE r.id = %s""", (node['parent_repo_id'],)
+            )
+            event_count = execute_query(
+                "SELECT COUNT(*) as cnt FROM event WHERE repo_id = %s", (node['id'],)
+            )
+            intermediate_nodes.append({
+                'id': node['id'],
+                'ownerName': owner[0]['nickname'] if owner else '未知',
+                'ownerAvatar': owner[0]['avatar'] if owner and owner[0]['avatar'] else '',
+                'fromOwner': from_owner[0]['nickname'] if from_owner else '未知',
+                'receivedAt': node['create_time'].strftime('%Y-%m-%d') if node['create_time'] else None,
+                'eventCount': event_count[0]['cnt'] if event_count else 0
+            })
+
+        # 5. 当前仓库信息
+        current_owner = execute_query(
+            "SELECT nickname, avatar FROM user WHERE id = %s", (repo['creator_id'],)
+        )
+        current_event_count = execute_query(
+            "SELECT COUNT(*) as cnt FROM event WHERE repo_id = %s", (repo_id,)
+        )
+        # 找最近事件时间作为 updatedAt
+        latest_event = execute_query(
+            "SELECT create_time FROM event WHERE repo_id = %s ORDER BY create_time DESC LIMIT 1",
+            (repo_id,)
+        )
+        updated_at = latest_event[0]['create_time'] if latest_event else repo['create_time']
+        current_repo_info = {
+            'id': repo['id'],
+            'name': repo['name'],
+            'brand': repo['brand'],
+            'model': repo['model'],
+            'spec': repo['specification'],
+            'image': repo['main_image'] or repo['cover_image'],
+            'owner': current_owner[0]['nickname'] if current_owner else '未知',
+            'ownerAvatar': current_owner[0]['avatar'] if current_owner and current_owner[0]['avatar'] else '',
+            'eventCount': current_event_count[0]['cnt'] if current_event_count else 0,
+            'createdAt': repo['create_time'].strftime('%Y-%m-%d') if repo['create_time'] else None,
+            'updatedAt': updated_at.strftime('%Y-%m-%d') if updated_at else None
+        }
+
+        # 6. 统计信息
+        total_nodes = len(all_nodes) + 1  # 所有节点+根节点
+        total_transfers = execute_query(
+            "SELECT COUNT(*) as cnt FROM transfer WHERE repo_id IN (SELECT id FROM repo WHERE parent_repo_id IS NOT NULL OR id = %s)",
+            (root_repo['id'],)
+        )
+        # 所有相关仓库的事件总数
+        all_repo_ids = [root_repo['id']] + [n['id'] for n in all_nodes]
+        placeholders = ','.join(['%s'] * len(all_repo_ids))
+        total_events = execute_query(
+            f"SELECT COUNT(*) as cnt FROM event WHERE repo_id IN ({placeholders})",
+            tuple(all_repo_ids)
+        )
+        # 总天数:从根仓库创建到现在
+        total_days = (datetime.now() - root_repo['create_time']).days if root_repo['create_time'] else 0
+
+        return jsonify({
+            'code': 0,
+            'data': {
+                'currentRepo': current_repo_info,
+                'rootNode': root_node,
+                'intermediateNodes': intermediate_nodes,
+                'totalNodes': total_nodes,
+                'totalTransfers': total_transfers[0]['cnt'] if total_transfers else 0,
+                'totalEvents': total_events[0]['cnt'] if total_events else 0,
+                'totalDays': total_days
+            }
         })
     except Exception as e:
         return jsonify({'code': 500, 'message': str(e)})

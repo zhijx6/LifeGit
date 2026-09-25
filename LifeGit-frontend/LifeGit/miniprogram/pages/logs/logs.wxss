@@ -1,16 +1,36 @@
+/**logs.wxss**/
+/* 黑白灰 · 极简 · 对齐全局设计系统（开发日志页，简单对齐） */
+
 page {
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background: #F7F7F7;
 }
+
 .scrollarea {
   flex: 1;
   overflow-y: hidden;
 }
+
+/* 每条日志一张小白卡 */
 .log-item {
-  margin-top: 20rpx;
-  text-align: center;
+  margin: 24rpx 32rpx 0;
+  padding: 32rpx 40rpx;
+  background: #FFFFFF;
+  border: 1rpx solid #ECECEC;
+  border-radius: 24rpx;
+  font-size: 26rpx;
+  color: #777777;
+  font-weight: 400;
+  line-height: 1.6;
 }
+
+.log-item:first-child {
+  margin-top: 32rpx;
+}
+
 .log-item:last-child {
-  padding-bottom: env(safe-area-inset-bottom);
+  margin-bottom: 32rpx;
+  padding-bottom: calc(32rpx + env(safe-area-inset-bottom));
 }

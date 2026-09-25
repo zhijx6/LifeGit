@@ -7,6 +7,16 @@ class NLPService:
 
     def __init__(self, api_provider: str = 'local'):
         self.api_provider = api_provider
+        try:
+            from config import AI_CONFIG
+            self.ai_config = AI_CONFIG
+        except Exception:
+            self.ai_config = {
+                'api_key': '',
+                'model': 'qwen3.8-flash',
+                'base_url': 'https://maas.qianwenaiapi.com/compatible-mode/v1',
+                'timeout': 30
+            }
         self.api_config = {
             'baidu': {
                 'app_id': '',
@@ -30,13 +40,14 @@ class NLPService:
         # 本地实体识别规则
         self.entity_patterns = {
             'location': [
+                r'([一二三四五六七八九十\d]+食堂)',
                 r'(.{2,4}大学)',
                 r'(.{2,4}校区)',
                 r'(.{1,3}楼)',
-                r'(教室|自习室|图书馆|实验室|食堂|宿舍|操场|体育馆)',
+                r'(.{1,3}(?:教室|自习室|图书馆|实验室|宿舍|操场|体育馆))',
                 r'(.{2,6}路)',
                 r'(.{2,6}街)',
-                r'(.{2,6}广场|公园|商场|超市)'
+                r'(.{2,6}(?:广场|公园|商场|超市|餐厅|饭店|咖啡店))',
             ],
             'brand': [
                 r'(苹果|Apple|iPhone|iPad|MacBook)',
@@ -98,6 +109,8 @@ class NLPService:
             return self._baidu_nlp_analyze(text)
         elif self.api_provider == 'tencent':
             return self._tencent_nlp_analyze(text)
+        elif self.api_provider == 'aliyun':
+            return self._aliyun_nlp_analyze(text)
         else:
             return self._local_nlp_analyze(text)
 
@@ -245,3 +258,77 @@ class NLPService:
         """解析百度API响应"""
         # TODO: 实现响应解析
         return {}
+
+    def _aliyun_nlp_analyze(self, text: str) -> Dict[str, Any]:
+        """阿里云千问 AI 平台 NLP 分析(OpenAI 兼容接口,带重试)"""
+        api_key = self.ai_config.get('api_key', '')
+        if not api_key or api_key.startswith('sk-你的'):
+            return self._local_nlp_analyze(text)
+
+        import requests
+        import json
+
+        prompt = (
+            "你是 LifeGit 智能创仓的语义分析助手。从用户文本中提取实体,用于创建生命周期仓库。\n"
+            "只返回 JSON,不要解释。格式:\n"
+            '{"category":"item或place","product_type":"品类","brand":"品牌","color":"颜色",'
+            '"specification":"规格","location":"地点(仅place)","structured_name":"标题","description":"20字内描述"}\n'
+            f"文本: {text}"
+        )
+
+        payload = {
+            'model': self.ai_config.get('model', 'qwen3.8-flash'),
+            'messages': [{'role': 'user', 'content': prompt}],
+            'temperature': 0.2,
+            'max_tokens': 300
+        }
+        headers = {
+            'Authorization': f'Bearer {api_key}',
+            'Content-Type': 'application/json'
+        }
+        url = f"{self.ai_config['base_url']}/chat/completions"
+
+        # 重试 2 次,每次超时 15 秒
+        for attempt in range(3):
+            try:
+                resp = requests.post(url, json=payload, headers=headers, timeout=15)
+                resp.raise_for_status()
+                data = resp.json()
+                content = data['choices'][0]['message']['content'].strip()
+
+                if content.startswith('```'):
+                    content = content.split('\n', 1)[-1]
+                    if content.endswith('```'):
+                        content = content[:-3]
+                content = content.strip()
+                start, end = content.find('{'), content.rfind('}')
+                if start != -1 and end != -1:
+                    content = content[start:end + 1]
+
+                result = json.loads(content)
+                category = result.get('category', 'item')
+                entities = {
+                    'location': [result['location']] if result.get('location') else [],
+                    'brand': [result['brand']] if result.get('brand') else [],
+                    'product_type': [result['product_type']] if result.get('product_type') else [],
+                    'color': [result['color']] if result.get('color') else [],
+                    'specification': [result['specification']] if result.get('specification') else []
+                }
+                return {
+                    'entities': entities,
+                    'intent': 'create',
+                    'category': category,
+                    'structured_name': result.get('structured_name') or self._generate_structured_name(entities, category),
+                    'suggested_fields': {
+                        'product_name': result.get('product_type') or result.get('structured_name') or '未命名',
+                        'brand': result.get('brand', ''),
+                        'model': '',
+                        'specification': result.get('specification', ''),
+                        'main_image': '',
+                        'description': result.get('description', '')
+                    }
+                }
+            except Exception as e:
+                print(f"Aliyun AI attempt {attempt + 1} error: {e}")
+                if attempt == 2:
+                    return self._local_nlp_analyze(text)

@@ -61,7 +61,7 @@ Page({
   },
 
   /**
-   * 分析文本
+   * 分析文本 - 跳转到结果页,由结果页调用后端 AI 接口
    */
   analyzeText() {
     const { inputText } = this.data
@@ -74,19 +74,8 @@ Page({
       return
     }
 
-    wx.showLoading({
-      title: 'AI分析中...',
-      mask: true
+    wx.navigateTo({
+      url: `/pages/nlp-result/nlp-result?text=${encodeURIComponent(inputText)}`
     })
-
-    // 模拟NLP分析过程
-    setTimeout(() => {
-      wx.hideLoading()
-
-      // 跳转到结果页面
-      wx.navigateTo({
-        url: `/pages/nlp-result/nlp-result?text=${encodeURIComponent(inputText)}`
-      })
-    }, 1500)
   }
 })
