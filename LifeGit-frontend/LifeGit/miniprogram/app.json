@@ -5,6 +5,7 @@
     "pages/logs/logs",
     "pages/my/my",
     "pages/repo-detail/repo-detail",
+    "pages/square/square",
     "pages/add-event/add-event",
     "pages/event-form/event-form",
     "pages/nlp-input/nlp-input",
@@ -36,6 +37,12 @@
         "text": "创建仓库",
         "iconPath": "images/add.png",
         "selectedIconPath": "images/add_select.png"
+      },
+      {
+        "pagePath": "pages/square/square",
+        "text": "广场",
+        "iconPath": "images/square.png",
+        "selectedIconPath": "images/square_select.png"
       },
       {"pagePath": "pages/my/my",
         "text": "我的仓库",

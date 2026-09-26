@@ -36,8 +36,8 @@ Page({
         answerCount: i.reply_count || 0,
         author: {
           id: i.creator_id,
-          name: '用户' + i.creator_id,
-          avatar: ''
+          name: i.creator_nickname || ('用户' + i.creator_id),
+          avatar: i.creator_avatar || ''
         },
         createTime: i.create_time || ''
       }))

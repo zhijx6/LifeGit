@@ -49,6 +49,6 @@ Page({
         this.setData({ [`mentions[${this.data.mentions.indexOf(item)}].is_read`]: 1 })
       })
     }
-    wx.navigateTo({ url: '/pages/issue-detail/issue-detail?id=' + issueId + '&repoId=' })
+    wx.navigateTo({ url: '/pages/issue-detail/issue-detail?id=' + issueId + '&repoId=' + (item ? (item.repo_id || '') : '') })
   }
 })

@@ -1,0 +1,66 @@
+<!--pages/square/square.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list" bindscrolltolower="loadMore" lower-threshold="100">
+  <view class="container">
+    <!-- 搜索栏 -->
+    <view class="search-bar">
+      <view class="search-input-wrapper">
+        <text class="search-icon">⌕</text>
+        <input class="search-input" placeholder="搜仓库名 / 产品 / 品牌 / 型号" placeholder-class="search-ph"
+               value="{{keyword}}" confirm-type="search" bindconfirm="onSearch" bindinput="onKeywordInput" />
+        <text class="search-clear" wx:if="{{keyword}}" bindtap="onClearKeyword">✕</text>
+      </view>
+      <view class="search-btn" bindtap="onSearch">
+        <text class="search-btn-text">搜索</text>
+      </view>
+    </view>
+
+    <!-- 仓库列表 -->
+    <view class="repo-list">
+      <block wx:if="{{repos.length > 0}}">
+        <view class="repo-item" wx:for="{{repos}}" wx:key="id" bindtap="goToRepoDetail" data-id="{{item.id}}">
+          <image wx:if="{{item.image}}" class="repo-thumb" src="{{item.image}}" mode="aspectFill"></image>
+          <view wx:else class="repo-thumb repo-thumb-placeholder">
+            <text class="repo-thumb-text">{{item.name[0]}}</text>
+          </view>
+          <view class="repo-info">
+            <text class="repo-name">{{item.name}}</text>
+            <text class="repo-brand-brand">{{item.brand}} · {{item.model}}</text>
+            <text class="repo-spec">{{item.spec}}</text>
+            <view class="repo-meta">
+              <text class="owner-name">主人：{{item.ownerName}}</text>
+              <text class="event-count">{{item.eventCount || 0}} 条记录</text>
+              <text class="create-time">{{item.createTime}}</text>
+            </view>
+          </view>
+          <view class="repo-arrow">
+            <text class="arrow-icon">›</text>
+          </view>
+        </view>
+      </block>
+
+      <!-- 空状态 -->
+      <block wx:elif="{{!loading}}">
+        <view class="empty-state">
+          <block wx:if="{{keyword}}">
+            <text class="empty-text">没有找到相关仓库</text>
+            <text class="empty-hint">换个关键词试试</text>
+          </block>
+          <block wx:else>
+            <text class="empty-text">广场上还没有仓库</text>
+            <text class="empty-hint">去「创建仓库」添加第一个吧</text>
+          </block>
+        </view>
+      </block>
+    </view>
+
+    <!-- 加载状态 -->
+    <view class="loading-state" wx:if="{{loading}}">
+      <text>加载中...</text>
+    </view>
+
+    <!-- 没有更多 -->
+    <view class="no-more" wx:if="{{!loading && repos.length > 0 && !hasMore}}">
+      <text>— 没有更多了 —</text>
+    </view>
+  </view>
+</scroll-view>

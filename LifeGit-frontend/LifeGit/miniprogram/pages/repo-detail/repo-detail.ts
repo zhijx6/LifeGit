@@ -13,6 +13,7 @@ Page({
       image: ''
     },
     events: [] as any[],
+    isOwner: false,
     issueCount: 0,
     hotIssues: [] as any[],
     isTransferred: false,
@@ -34,16 +35,35 @@ Page({
 
     api.getRepoDetail(this.data.repoId).then((data: any) => {
       wx.hideLoading()
+      const repoInfo = data.repoInfo || {}
+      const isOwner = String(repoInfo.creatorId) === String(wx.getStorageSync('userId'))
       this.setData({
-        repoInfo: data.repoInfo || {},
+        repoInfo,
+        isOwner,
         events: (data.events || []).sort((a: any, b: any) => {
           return new Date(b.time).getTime() - new Date(a.time).getTime()
         })
       })
+      this.loadHotIssues()
     }).catch(() => {
       wx.hideLoading()
       wx.showToast({ title: '加载失败', icon: 'none' })
     })
+  },
+
+  loadHotIssues() {
+    api.getIssueList(this.data.repoId, 1, 3).then((data: any) => {
+      const pagination = data.pagination || {}
+      const hotIssues = (data.issues || []).map((i: any) => ({
+        id: i.id,
+        title: i.title,
+        status: i.status,
+        answerCount: i.reply_count || 0,
+        time: (i.create_time || '').split(' ')[0],
+        hasBestAnswer: !!i.has_best_answer
+      }))
+      this.setData({ issueCount: pagination.total || 0, hotIssues })
+    }).catch(() => {})
   },
 
   addEvent() {

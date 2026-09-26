@@ -46,8 +46,8 @@ Page({
         tags: issueData.tags || [],
         author: {
           id: issueData.creator_id,
-          name: '用户' + issueData.creator_id,
-          avatar: ''
+          name: issueData.creator_nickname || ('用户' + issueData.creator_id),
+          avatar: issueData.creator_avatar || ''
         },
         createTime: issueData.create_time || ''
       }
@@ -64,7 +64,11 @@ Page({
         const reply = {
           id: r.id,
           content: r.content,
-          author: { id: r.author_id, name: '用户' + r.author_id, avatar: '' },
+          author: {
+            id: r.author_id,
+            name: r.author_nickname || ('用户' + r.author_id),
+            avatar: r.author_avatar || ''
+          },
           createTime: r.create_time || '',
           likeCount: 0,
           isLiked: false,
@@ -85,13 +89,21 @@ Page({
         canSetBest: isOwner
       })
 
-      // Load participants for @mentions
-      api.getIssueParticipants(this.data.repoId).then((pData: any) => {
-        const users = (pData || []).map((u: any) => ({
-          id: u.id,
-          name: '用户' + u.id,
-          avatar: ''
-        }))
+      // 入口未带 repoId 时（如@提醒跳转）用 issue 自身的 repo_id 兜底
+      const repoId = this.data.repoId || issueData.repo_id || ''
+      if (!this.data.repoId && repoId) {
+        this.setData({ repoId: String(repoId) })
+      }
+
+      // Load participants for @mentions（排除自己）
+      api.getIssueParticipants(repoId).then((pData: any) => {
+        const users = (pData || [])
+          .filter((u: any) => String(u.id) !== String(currentUserId))
+          .map((u: any) => ({
+            id: u.id,
+            name: u.nickname || ('用户' + u.id),
+            avatar: u.avatar || ''
+          }))
         this.setData({ availableUsers: users })
       }).catch(() => {})
     }).catch(() => {
@@ -112,16 +124,18 @@ Page({
   },
 
   confirmAtUser() {
-    const { selectedUser, availableUsers } = this.data
+    const { selectedUser, availableUsers, selectedAtUsers } = this.data
     if (!selectedUser) {
       wx.showToast({ title: '请选择用户', icon: 'none' })
       return
     }
-    const user = availableUsers.find((u: any) => u.id === selectedUser)
+    const user = availableUsers.find((u: any) => String(u.id) === String(selectedUser))
     if (user) {
       this.setData({
         replyText: this.data.replyText + '@' + user.name + ' ',
-        selectedAtUsers: [...this.data.selectedAtUsers, selectedUser]
+        selectedAtUsers: selectedAtUsers.includes(selectedUser)
+          ? selectedAtUsers
+          : [...selectedAtUsers, selectedUser]
       })
     }
     this.hideAtModal()
@@ -218,7 +232,7 @@ Page({
   },
 
   submitReply() {
-    const { replyText, issueId } = this.data
+    const { replyText, issueId, selectedAtUsers } = this.data
     if (!replyText.trim()) {
       wx.showToast({ title: '请输入回答内容', icon: 'none' })
       return
@@ -226,10 +240,10 @@ Page({
 
     wx.showLoading({ title: '发送中...', mask: true })
 
-    api.createReply(issueId, replyText).then(() => {
+    api.createReply(issueId, replyText, selectedAtUsers.map(Number)).then(() => {
       wx.hideLoading()
       wx.showToast({ title: '回答成功', icon: 'success' })
-      this.setData({ replyText: '' })
+      this.setData({ replyText: '', selectedAtUsers: [] })
       this.loadIssueDetail()
     }).catch(() => {
       wx.hideLoading()

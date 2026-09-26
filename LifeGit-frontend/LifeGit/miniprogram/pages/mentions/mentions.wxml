@@ -13,6 +13,7 @@
         <view class="mention-dot" wx:if="{{!item.is_read}}"></view>
         <view class="mention-content">
           <text class="mention-issue-title">{{item.issue_title}}</text>
+          <text class="mention-author">{{item.reply_author_name}} 回复了你</text>
           <text class="mention-reply-text">{{item.reply_content}}</text>
           <view class="mention-meta">
             <text class="mention-time">{{item.mention_time}}</text>

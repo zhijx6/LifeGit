@@ -273,6 +273,60 @@ def get_my_repos():
         return jsonify({'code': 500, 'message': str(e)})
 
 
+@app.route('/api/repo/square', methods=['GET'])
+def get_square_repos():
+    """广场：全平台仓库列表（支持关键词搜索）"""
+    try:
+        page = request.args.get('page', 1, type=int)
+        page_size = request.args.get('page_size', 10, type=int)
+        keyword = (request.args.get('keyword') or '').strip()
+        offset = (page - 1) * page_size
+
+        where = ["r.status = 'active'"]
+        params = []
+
+        if keyword:
+            where.append(
+                "(r.name LIKE %s OR r.product_name LIKE %s OR r.brand LIKE %s OR r.model LIKE %s)"
+            )
+            kw = f"%{keyword}%"
+            params.extend([kw, kw, kw, kw])
+
+        where_clause = " AND ".join(where)
+
+        sql = f"""
+            SELECT r.id, r.name, r.product_name, r.brand, r.model, r.specification,
+                r.main_image, r.cover_image, r.type, r.create_time,
+                u.id as owner_id, u.nickname as owner_name,
+                (SELECT COUNT(*) FROM event e WHERE e.repo_id = r.id) as event_count
+            FROM repo r
+            JOIN user u ON r.creator_id = u.id
+            WHERE {where_clause}
+            ORDER BY r.create_time DESC
+            LIMIT %s OFFSET %s
+        """
+        repos = execute_query(sql, params + [page_size, offset])
+
+        count_sql = f"SELECT COUNT(*) as total FROM repo r WHERE {where_clause}"
+        count_result = execute_query(count_sql, params)
+        total = count_result[0]['total'] if count_result else 0
+
+        return jsonify({
+            'code': 0,
+            'data': {
+                'repos': repos,
+                'pagination': {
+                    'page': page,
+                    'page_size': page_size,
+                    'total': total,
+                    'total_pages': (total + page_size - 1) // page_size
+                }
+            }
+        })
+    except Exception as e:
+        return jsonify({'code': 500, 'message': str(e)})
+
+
 @app.route('/api/repo/<int:repo_id>', methods=['GET'])
 def get_repo_detail(repo_id):
     try:
@@ -746,6 +800,7 @@ def get_event_detail(event_id):
 
 
 @app.route('/api/event/<int:event_id>', methods=['DELETE'])
+@login_required
 def delete_event(event_id):
     """删除事件"""
     try:
@@ -754,6 +809,15 @@ def delete_event(event_id):
         result = execute_query(sql, (event_id,))
         if not result:
             return jsonify({'code': 404, 'message': '事件不存在'})
+
+        # 验证当前用户是事件创建者或仓库主人
+        owner_sql = """
+            SELECT 1 FROM event e
+            JOIN repo r ON e.repo_id = r.id
+            WHERE e.id = %s AND (e.user_id = %s OR r.creator_id = %s)
+        """
+        if not execute_query(owner_sql, (event_id, request.current_user_id, request.current_user_id)):
+            return jsonify({'code': 403, 'message': '无权删除此事件'})
 
         # 删除事件
         execute_update("DELETE FROM event WHERE id = %s", (event_id,))
@@ -986,6 +1050,7 @@ def get_issue_list(repo_id):
 
         sql = f"""
             SELECT i.*, u.id as creator_uid,
+                u.nickname as creator_nickname, u.avatar as creator_avatar,
                 (SELECT COUNT(*) FROM reply r WHERE r.issue_id = i.id) as reply_count,
                 (SELECT COUNT(*) FROM reply r WHERE r.issue_id = i.id AND r.is_best_answer = 1) as has_best_answer
             FROM issue i
@@ -1021,7 +1086,8 @@ def get_issue_detail(issue_id):
     """获取Issue详情（含所有回复）"""
     try:
         sql = """
-            SELECT i.*, u.id as creator_uid
+            SELECT i.*, u.id as creator_uid,
+                u.nickname as creator_nickname, u.avatar as creator_avatar
             FROM issue i
             LEFT JOIN user u ON i.creator_id = u.id
             WHERE i.id = %s
@@ -1033,7 +1099,8 @@ def get_issue_detail(issue_id):
 
         # 获取回复列表（最佳答案置顶）
         reply_sql = """
-            SELECT r.*, u.id as author_uid
+            SELECT r.*, u.id as author_uid,
+                u.nickname as author_nickname, u.avatar as author_avatar
             FROM reply r
             LEFT JOIN user u ON r.author_id = u.id
             WHERE r.issue_id = %s
@@ -1054,6 +1121,7 @@ def get_issue_detail(issue_id):
 
 
 @app.route('/api/issue/<int:issue_id>/status', methods=['PUT'])
+@login_required
 def update_issue_status(issue_id):
     """更新Issue状态（开放/已解答/已关闭）"""
     try:
@@ -1066,6 +1134,12 @@ def update_issue_status(issue_id):
         issue = execute_query("SELECT id, creator_id FROM issue WHERE id = %s", (issue_id,))
         if not issue:
             return jsonify({'code': 404, 'message': 'Issue不存在'})
+
+        # 仅提问者或仓库主人可更新状态
+        repo = execute_query("SELECT creator_id FROM repo WHERE id = (SELECT repo_id FROM issue WHERE id = %s)", (issue_id,))
+        is_repo_owner = repo and repo[0]['creator_id'] == request.current_user_id
+        if issue[0]['creator_id'] != request.current_user_id and not is_repo_owner:
+            return jsonify({'code': 403, 'message': '无权更新此Issue状态'})
 
         execute_query(
             "UPDATE issue SET status = %s, update_time = NOW() WHERE id = %s",
@@ -1081,12 +1155,19 @@ def update_issue_status(issue_id):
 
 
 @app.route('/api/issue/<int:issue_id>', methods=['DELETE'])
+@login_required
 def delete_issue(issue_id):
     """删除Issue"""
     try:
-        issue = execute_query("SELECT id FROM issue WHERE id = %s", (issue_id,))
+        issue = execute_query("SELECT id, creator_id FROM issue WHERE id = %s", (issue_id,))
         if not issue:
             return jsonify({'code': 404, 'message': 'Issue不存在'})
+
+        # 仅提问者或仓库主人可删除
+        repo = execute_query("SELECT creator_id FROM repo WHERE id = (SELECT repo_id FROM issue WHERE id = %s)", (issue_id,))
+        is_repo_owner = repo and repo[0]['creator_id'] == request.current_user_id
+        if issue[0]['creator_id'] != request.current_user_id and not is_repo_owner:
+            return jsonify({'code': 403, 'message': '无权删除此Issue'})
 
         execute_update("DELETE FROM issue WHERE id = %s", (issue_id,))
 
@@ -1148,6 +1229,7 @@ def create_reply():
 
 
 @app.route('/api/reply/<int:reply_id>/best', methods=['PUT'])
+@login_required
 def set_best_answer(reply_id):
     """设置最佳答案"""
     try:
@@ -1157,6 +1239,11 @@ def set_best_answer(reply_id):
             return jsonify({'code': 404, 'message': '回复不存在'})
 
         issue_id = reply[0]['issue_id']
+
+        # 仅提问者可设置最佳答案
+        issue = execute_query("SELECT creator_id FROM issue WHERE id = %s", (issue_id,))
+        if not issue or issue[0]['creator_id'] != request.current_user_id:
+            return jsonify({'code': 403, 'message': '仅提问者可设置最佳答案'})
 
         # 取消该Issue下其他最佳答案
         execute_query(
@@ -1179,12 +1266,18 @@ def set_best_answer(reply_id):
 
 
 @app.route('/api/reply/<int:reply_id>/cancel_best', methods=['PUT'])
+@login_required
 def cancel_best_answer(reply_id):
     """取消最佳答案"""
     try:
-        reply = execute_query("SELECT id FROM reply WHERE id = %s", (reply_id,))
+        reply = execute_query("SELECT id, issue_id FROM reply WHERE id = %s", (reply_id,))
         if not reply:
             return jsonify({'code': 404, 'message': '回复不存在'})
+
+        # 仅提问者可取消最佳答案
+        issue = execute_query("SELECT creator_id FROM issue WHERE id = %s", (reply[0]['issue_id'],))
+        if not issue or issue[0]['creator_id'] != request.current_user_id:
+            return jsonify({'code': 403, 'message': '仅提问者可取消最佳答案'})
 
         execute_update("UPDATE reply SET is_best_answer = 0 WHERE id = %s", (reply_id,))
 
@@ -1220,9 +1313,11 @@ def get_my_mentions():
         sql = f"""
             SELECT m.id, m.is_read, m.create_time as mention_time,
                 r.id as reply_id, r.content as reply_content,
-                i.id as issue_id, i.title as issue_title
+                i.id as issue_id, i.title as issue_title, i.repo_id,
+                ru.nickname as reply_author_name, ru.avatar as reply_author_avatar
             FROM mention m
             JOIN reply r ON m.reply_id = r.id
+            JOIN user ru ON r.author_id = ru.id
             JOIN issue i ON r.issue_id = i.id
             WHERE {where_clause}
             ORDER BY m.create_time DESC
@@ -1289,15 +1384,17 @@ def get_repo_participants(repo_id):
     """获取仓库下有记录的用户列表（用于@提醒）"""
     try:
         sql = """
-            SELECT DISTINCT e.user_id as id
-            FROM event e
-            WHERE e.repo_id = %s
-            UNION
-            SELECT DISTINCT i.creator_id as id
-            FROM issue i
-            WHERE i.repo_id = %s
+            SELECT u.id, u.nickname, u.avatar
+            FROM user u
+            WHERE u.id IN (
+                SELECT e.user_id FROM event e WHERE e.repo_id = %s
+                UNION
+                SELECT i.creator_id FROM issue i WHERE i.repo_id = %s
+                UNION
+                SELECT r2.creator_id FROM repo r2 WHERE r2.id = %s
+            )
         """
-        users = execute_query(sql, (repo_id, repo_id))
+        users = execute_query(sql, (repo_id, repo_id, repo_id))
 
         return jsonify({
             'code': 0,

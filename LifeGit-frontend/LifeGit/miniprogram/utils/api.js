@@ -107,11 +107,36 @@ var deleteRepo = function(repoId) {
   return request('/api/repo/' + repoId, 'DELETE');
 };
 
+var getSquareRepos = function(page, pageSize, keyword) {
+  page = page || 1;
+  pageSize = pageSize || 10;
+  var url = '/api/repo/square?page=' + page + '&page_size=' + pageSize;
+  if (keyword) url += '&keyword=' + encodeURIComponent(keyword);
+  return request(url).then(function(data) {
+    var repos = (data.repos || []).map(function(r) {
+      return {
+        id: r.id,
+        name: r.name || r.product_name,
+        type: r.type || 'item',
+        brand: r.brand || '未知品牌',
+        model: r.model || '-',
+        spec: r.specification || '-',
+        image: r.main_image || r.cover_image || '',
+        eventCount: r.event_count || 0,
+        ownerName: r.owner_name || ('用户' + r.owner_id),
+        createTime: r.create_time ? r.create_time.split(' ')[0] : ''
+      };
+    });
+    return { repos: repos, pagination: data.pagination };
+  });
+};
+
 var getRepoDetail = function(repoId) {
   return request('/api/repo/' + repoId).then(function(data) {
     var repo = data.repo || {};
     var repoInfo = {
       id: repo.id,
+      creatorId: repo.creator_id,
       name: repo.name || repo.product_name,
       type: repo.type || 'item',
       brand: repo.brand || '',
@@ -332,6 +357,7 @@ module.exports = {
   nlpAnalyze: nlpAnalyze,
   confirmNlpRepo: confirmNlpRepo,
   getMyRepos: getMyRepos,
+  getSquareRepos: getSquareRepos,
   getRepoDetail: getRepoDetail,
   deleteRepo: deleteRepo,
   getEventTypes: getEventTypes,

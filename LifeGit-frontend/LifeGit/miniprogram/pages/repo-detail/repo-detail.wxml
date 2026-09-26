@@ -20,13 +20,13 @@
         <text class="repo-model">{{repoInfo.model}}</text>
         <text class="repo-spec">{{repoInfo.spec}}</text>
       </view>
-      <view class="delete-repo-btn" bindtap="deleteRepo">
+      <view class="delete-repo-btn" wx:if="{{isOwner}}" bindtap="deleteRepo">
         <text class="delete-text">删除仓库</text>
       </view>
     </view>
 
     <!-- Fork/转让入口 -->
-    <view class="fork-entry-section" wx:if="{{!isTransferred}}">
+    <view class="fork-entry-section" wx:if="{{!isTransferred && isOwner}}">
       <view class="fork-header">
         <view class="header-left">
           <text class="section-title">物品流转</text>
@@ -131,7 +131,7 @@
     <view class="events-section">
       <view class="section-header">
         <text class="section-title">事件记录</text>
-        <text class="add-event-btn" bindtap="addEvent">+ 添加</text>
+        <text class="add-event-btn" wx:if="{{isOwner}}" bindtap="addEvent">+ 添加</text>
       </view>
       <view class="timeline">
         <block wx:for="{{events}}" wx:key="id">
@@ -141,7 +141,7 @@
             <view class="timeline-content" bindtap="goToEventDetail" data-id="{{item.id}}" data-repo-id="{{repoId}}">
               <view class="event-header-row">
                 <text class="event-time">{{item.time}}</text>
-                <text class="event-delete" bindtap="deleteEvent" data-id="{{item.id}}">×</text>
+                <text class="event-delete" wx:if="{{isOwner}}" bindtap="deleteEvent" data-id="{{item.id}}">×</text>
               </view>
               <text class="event-type">{{item.type}}</text>
               <text class="event-description">{{item.description}}</text>
