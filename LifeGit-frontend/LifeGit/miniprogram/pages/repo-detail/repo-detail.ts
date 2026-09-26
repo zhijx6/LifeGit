@@ -40,15 +40,36 @@ Page({
       this.setData({
         repoInfo,
         isOwner,
+        isTransferred: !!repoInfo.isTransferred,
+        transferredTime: repoInfo.transferredTime || '',
+        newOwner: repoInfo.newOwner || '',
         events: (data.events || []).sort((a: any, b: any) => {
           return new Date(b.time).getTime() - new Date(a.time).getTime()
         })
       })
       this.loadHotIssues()
+      this.loadForkGraph()
     }).catch(() => {
       wx.hideLoading()
       wx.showToast({ title: '加载失败', icon: 'none' })
     })
+  },
+
+  loadForkGraph() {
+    // 地点型仓库无fork图谱；未登录时跳过（该接口需要token）
+    if (this.data.repoInfo.type === 'place' || !wx.getStorageSync('token')) return
+    api.getForkGraph(this.data.repoId).then((data: any) => {
+      const intermediate = data.intermediateNodes || []
+      this.setData({
+        hasForkRelations: intermediate.length > 0,
+        forkCount: intermediate.length,
+        forkRelations: intermediate.map((n: any) => ({
+          id: n.id,
+          owner: n.ownerName || '未知'
+        })),
+        isOriginalOwner: (data.rootNode && data.rootNode.id) === Number(this.data.repoId)
+      })
+    }).catch(() => {})
   },
 
   loadHotIssues() {

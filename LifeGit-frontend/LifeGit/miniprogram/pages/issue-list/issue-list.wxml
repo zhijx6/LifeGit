@@ -74,8 +74,14 @@
       <!-- 空状态 -->
       <block wx:else>
         <view class="empty-state">
-          <text class="empty-title">还没有问题</text>
-          <text class="empty-desc">成为第一个提问的人吧</text>
+          <block wx:if="{{activeFilter === 'my'}}">
+            <text class="empty-title">你还没有在此仓库提问</text>
+            <text class="empty-desc">提问后可以在这里找到自己的问题</text>
+          </block>
+          <block wx:else>
+            <text class="empty-title">还没有问题</text>
+            <text class="empty-desc">成为第一个提问的人吧</text>
+          </block>
           <button class="ask-first-btn" bindtap="askQuestion">发起提问</button>
         </view>
       </block>

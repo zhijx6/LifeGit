@@ -23,11 +23,18 @@ const eventConfigs: Record<string, EventConfig> = {
 }
 
 const conditionOptions = ['全新未使用', '九成新', '八成新', '七成新', '可用', '需维修', '故障']
+const conditionValues = ['brand_new', 'excellent', 'great', 'good', 'usable', 'needs_repair', 'broken']
 const transferChannelOptions = ['闲鱼', '转转', '朋友圈', '线下交易', '亲友赠送', '其他']
+const transferChannelValues = ['xianyu', 'zhuanzhuan', 'wechat', 'offline', 'friend', 'other']
 const maintenanceTypeOptions = ['清洁保养', '更换配件', '系统更新', '性能优化', '预防性维护', '其他']
+const maintenanceTypeValues = ['cleaning', 'replacement', 'update', 'optimization', 'preventive', 'other']
 const upgradeTypeOptions = ['硬件升级', '软件升级', '配件改装', '外观改装', '性能优化', '其他']
+const upgradeTypeValues = ['hardware', 'software', 'accessory', 'appearance', 'performance', 'other']
 const faultTypeOptions = ['硬件', '软件', '性能', '外观', '电池', '连接', '其他']
+const faultTypeValues = ['hardware', 'software', 'performance', 'appearance', 'battery', 'connectivity', 'other']
 const transferTypeOptions = ['出售', '赠送', '置换', '丢失', '报废', '捐赠']
+const transferTypeValues = ['sell', 'gift', 'exchange', 'lost', 'discard', 'donate']
+const channelValues = ['official', 'tmall', 'jd', 'pinduoduo', 'offline', 'secondhand', 'other']
 // 地点型选项
 const waitTimeOptions = ['不用等', '15分钟内', '30分钟以上']
 const waitTimeValues = ['none', 'within_15', 'over_30']
@@ -38,7 +45,13 @@ const changeTypeValues = ['business_status', 'price_change', 'menu_update', 'ren
 const sourceOptions = ['朋友推荐', '小红书', '路过看到', '其他']
 const sourceValues = ['friend', 'xiaohongshu', 'passing_by', 'other']
 const memoryTypeOptions = ['重要时刻', '难忘回忆', '成就感', '温馨时刻', '挑战突破', '第一次', '其他']
-const memoryTypeValues = ['important_moment', 'unforgettable', 'achievement', 'warm_moment', 'challenge', 'first_time', 'other']
+const memoryTypeValues = ['milestone', 'unforgettable', 'achievement', 'heartwarming', 'breakthrough', 'first_time', 'other']
+
+// 表单显示的是中文label，提交时按下标转成后端schema的枚举值
+function labelToValue(labels: string[], values: string[], label: string, fallback: string): string {
+  const i = labels.indexOf(label)
+  return i >= 0 ? values[i] : (label || fallback)
+}
 
 Page({
   data: {
@@ -47,7 +60,7 @@ Page({
     repoType: 'item',
     eventConfig: {} as EventConfig,
     today: '',
-    channels: ['官网', '天猫', '京东', '线下门店', '其他'],
+    channels: ['官网', '天猫', '京东', '拼多多', '线下门店', '二手平台', '其他'],
     channelIndex: -1,
     conditionOptions,
     conditionIndex: -1,
@@ -73,9 +86,6 @@ Page({
     sourceIndex: -1,
     memoryTypeOptions,
     memoryTypeIndex: -1,
-    overallRatingIndex: -1,
-    changeTypeIndex: -1,
-    sourceIndex: -1,
     // 地点型评分
     tasteRating: 0,
     environmentRating: 0,
@@ -99,6 +109,7 @@ Page({
       // 维护/维修事件
       maintenanceDate: '',
       maintenanceItem: '',
+      maintenanceType: '',
       maintenanceCost: '',
       repairShop: '',
       partImages: [] as string[],
@@ -106,11 +117,13 @@ Page({
       // 升级事件
       upgradeDate: '',
       upgradeItem: '',
+      upgradeType: '',
       upgradeCost: '',
       performanceExperience: '',
       // 使用体验事件
       experienceDate: '',
       experienceTitle: '',
+      experienceRating: 0,
       sceneDescription: '',
       experienceFeeling: '',
       experienceImages: [] as string[],
@@ -129,11 +142,13 @@ Page({
       // 故障/缺陷事件
       faultDate: '',
       faultPhenomenon: '',
+      faultType: '',
       faultFrequency: '',
       isResolved: '',
       officialResponse: '',
       // 转让/出售事件
       transferDate: '',
+      transferType: '',
       transferPrice: '',
       transferCondition: '',
       transferAccessories: '',
@@ -492,33 +507,33 @@ Page({
       purchase: {
         purchase_date: fd.purchaseDate,
         price: parseFloat(fd.price) || 0,
-        channel: fd.channel,
+        channel: labelToValue(this.data.channels, channelValues, fd.channel, 'other'),
         initial_experience: fd.initialExperience
       },
       maintenance: {
         maintenance_date: fd.maintenanceDate,
         maintenance_project: fd.maintenanceItem,
-        maintenance_type: fd.maintenanceType || '其他',
+        maintenance_type: labelToValue(maintenanceTypeOptions, maintenanceTypeValues, fd.maintenanceType, 'other'),
         cost: parseFloat(fd.maintenanceCost) || 0,
         service_provider: fd.repairShop
       },
       upgrade: {
         upgrade_date: fd.upgradeDate,
         upgrade_items: fd.upgradeItem,
-        upgrade_type: fd.upgradeType || '其他',
+        upgrade_type: labelToValue(upgradeTypeOptions, upgradeTypeValues, fd.upgradeType, 'other'),
         cost: parseFloat(fd.upgradeCost) || 0,
         performance_improvement: fd.performanceExperience
       },
       experience: {
         experience_date: fd.experienceDate,
         rating: fd.experienceRating || 5,
-        content: fd.experienceTitle + '\n' + (fd.sceneDescription || ''),
-        content_detail: fd.experienceFeeling
+        // 标题/场景/感受合并进 schema 的"详细描述"字段，避免 content_detail 不在 schema 里被丢弃
+        content: [fd.experienceTitle, fd.sceneDescription, fd.experienceFeeling].filter(Boolean).join('\n')
       },
       memory: {
         memory_date: fd.memoryDate,
         memory_title: fd.memoryTitle,
-        memory_type: fd.memoryType,
+        memory_type: labelToValue(memoryTypeOptions, memoryTypeValues, fd.memoryType, 'other'),
         participants: fd.participants,
         location: fd.location,
         emotional_rating: fd.emotionalRating || 0,
@@ -531,18 +546,18 @@ Page({
         fault_date: fd.faultDate,
         fault_description: fd.faultPhenomenon,
         fault_frequency: fd.faultFrequency || 'first',
-        fault_type: fd.faultType || '其他',
+        fault_type: labelToValue(faultTypeOptions, faultTypeValues, fd.faultType, 'other'),
         is_repaired: fd.isResolved === 'yes',
         official_response: fd.officialResponse
       },
       transfer: {
         transfer_date: fd.transferDate,
-        transfer_type: fd.transferType || '出售',
+        transfer_type: labelToValue(transferTypeOptions, transferTypeValues, fd.transferType, 'sell'),
         transfer_price: parseFloat(fd.transferPrice) || 0,
-        item_condition: fd.transferCondition,
+        item_condition: labelToValue(conditionOptions, conditionValues, fd.transferCondition, ''),
         includes_accessories: fd.transferAccessories,
         transfer_reason: fd.transferReason,
-        transfer_channel: fd.transferChannel,
+        transfer_channel: labelToValue(transferChannelOptions, transferChannelValues, fd.transferChannel, 'other'),
         message_to_next_owner: fd.transferMessage,
         usage_tips: fd.transferTips
       },
@@ -611,12 +626,24 @@ Page({
     const eventData = this.buildEventData()
     const that = this
 
-    // 需要上传图片的事件类型
+    // 需要上传图片的事件类型（field 必须是后端 schema 里的 images 字段名，否则会被后端丢弃）
     var imageFields: Array<{key: string, field: string}> = []
-    if (eventType === 'transfer') {
+    if (eventType === 'purchase') {
+      imageFields = [{ key: 'unboxImages', field: 'images' }]
+    } else if (eventType === 'maintenance') {
       imageFields = [
-        { key: 'transferImages', field: 'item_photos' },
-        { key: 'transferReceiptImages', field: 'transfer_receipt_photos' }
+        { key: 'partImages', field: 'parts_images' },
+        { key: 'receiptImages', field: 'maintenance_images' }
+      ]
+    } else if (eventType === 'experience') {
+      imageFields = [{ key: 'experienceImages', field: 'images' }]
+    } else if (eventType === 'memory') {
+      imageFields = [{ key: 'memoryImages', field: 'memory_images' }]
+    } else if (eventType === 'transfer') {
+      // 实物照片与凭证照片合并进 schema 的 transfer_images
+      imageFields = [
+        { key: 'transferImages', field: 'transfer_images' },
+        { key: 'transferReceiptImages', field: 'transfer_images' }
       ]
     } else if (eventType === 'visit') {
       imageFields = [{ key: 'visitPhotos', field: 'photos' }]
@@ -628,7 +655,7 @@ Page({
 
     var allPaths: string[] = []
     for (var i = 0; i < imageFields.length; i++) {
-      allPaths = allPaths.concat(fd[imageFields[i].key] || [])
+      allPaths = allPaths.concat((fd as any)[imageFields[i].key] || [])
     }
 
     var uploadPromise = allPaths.length > 0
@@ -642,7 +669,8 @@ Page({
       for (var i = 0; i < imageFields.length; i++) {
         var arr = (fd as any)[imageFields[i].key] as string[]
         if (arr && arr.length > 0) {
-          ;(eventData as any)[imageFields[i].field] = urls.slice(offset, offset + arr.length)
+          var fieldName = imageFields[i].field
+          ;(eventData as any)[fieldName] = ((eventData as any)[fieldName] || []).concat(urls.slice(offset, offset + arr.length))
           offset += arr.length
         }
       }

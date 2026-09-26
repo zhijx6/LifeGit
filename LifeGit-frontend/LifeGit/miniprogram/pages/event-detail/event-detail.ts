@@ -38,16 +38,27 @@ Page({
         schemaPromise = Promise.resolve({})
       }
 
-      return schemaPromise.then(function(s: any) {
+      return schemaPromise.then((s: any) => {
         wx.hideLoading()
-        var fields = (s && s.fields || []).map(function(f: any) {
+        var fields = (s && s.fields || []).filter(function(f: any) {
+          // 只显示用户实际填写过的字段：content 中不存在、空串、空数组都跳过
+          if (!content || !(f.field in content)) return false
+          var val = content[f.field]
+          if (val === null || val === undefined || val === '') return false
+          if (Array.isArray(val) && val.length === 0) return false
+          return true
+        }).map(function(f: any) {
           var val = content[f.field]
           var displayValue = val
           if (f.type === 'boolean') displayValue = val ? '是' : '否'
+          else if (f.type === 'rating') displayValue = String(val) + ' 星'
           else if (f.type === 'number' && f.prefix) displayValue = f.prefix + (val || '0')
           else if (f.type === 'select' && f.options) {
             var opt = f.options.find(function(o: any) { return (o.value || o) === val })
             displayValue = opt ? (opt.label || opt) : val
+          } else if (Array.isArray(val)) {
+            // tags / files 等数组安全显示
+            displayValue = val.map(function(v: any) { return (v && typeof v === 'object') ? (v.name || '') : v }).filter(Boolean).join('、')
           }
           return { field: f.field, label: f.label, type: f.type, value: val, displayValue: String(displayValue || '') }
         })
@@ -57,7 +68,7 @@ Page({
           fields = Object.keys(content).map(function(key) {
             var val = content[key]
             if (Array.isArray(val)) {
-              return { field: key, label: key, type: 'images', value: val, displayValue: '' }
+              return { field: key, label: key, type: typeof val[0] === 'string' ? 'images' : 'text', value: val, displayValue: '' }
             }
             return { field: key, label: key, type: 'text', value: val, displayValue: String(val || '') }
           })
@@ -71,7 +82,7 @@ Page({
         })
 
         wx.setNavigationBarTitle({ title: (s && s.name) || '事件详情' })
-      }.bind(this))
+      })
     }).catch(function() {
       wx.hideLoading()
       wx.showToast({ title: '加载失败', icon: 'none' })

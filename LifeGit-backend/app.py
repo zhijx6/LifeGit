@@ -1,10 +1,11 @@
 # app.py
 from flask import Flask, request, jsonify
+from flask.json.provider import DefaultJSONProvider
 from werkzeug.utils import secure_filename
 import json
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, date, time as time_cls
 from utils.db import execute_query, execute_insert, execute_update
 from services.product_api_service import ProductAPIService
 from services.nlp_service import NLPService
@@ -12,7 +13,21 @@ from services.event_service import EventSchemaService, EventType
 from services.file_service import FileService
 from services.auth_service import AuthService, login_required
 
+
+class LifeGitJSONProvider(DefaultJSONProvider):
+    """datetime/date/time 统一序列化为本地格式字符串，而非 Flask 默认的 GMT HTTP 日期"""
+    def default(self, o):
+        if isinstance(o, datetime):
+            return o.strftime('%Y-%m-%d %H:%M:%S')
+        if isinstance(o, date):
+            return o.strftime('%Y-%m-%d')
+        if isinstance(o, time_cls):
+            return o.strftime('%H:%M:%S')
+        return super().default(o)
+
+
 app = Flask(__name__)
+app.json = LifeGitJSONProvider(app)
 
 # 配置文件上传
 UPLOAD_FOLDER = 'uploads'
@@ -338,7 +353,25 @@ def get_repo_detail(repo_id):
         event_sql = "SELECT * FROM event WHERE repo_id = %s ORDER BY create_time DESC"
         events = execute_query(event_sql, (repo_id,))
 
-        return jsonify({'code': 0, 'data': {'repo': result[0], 'timeline': events}})
+        # 已转让仓库附带最近一次转让信息（时间/新主人）
+        transfer_info = None
+        if result[0].get('status') == 'transferred':
+            transfer_sql = """
+                SELECT DATE_FORMAT(t.accepted_at, '%%Y-%%m-%%d') as accepted_at,
+                    t.new_repo_id,
+                    u.nickname as new_owner_name, u.avatar as new_owner_avatar
+                FROM transfer t
+                LEFT JOIN user u ON t.to_user_id = u.id
+                WHERE t.repo_id = %s AND t.status = 'accepted'
+                ORDER BY t.accepted_at DESC
+                LIMIT 1
+            """
+            transfer_info = (execute_query(transfer_sql, (repo_id,)) or [None])[0]
+
+        return jsonify({
+            'code': 0,
+            'data': {'repo': result[0], 'timeline': events, 'transfer_info': transfer_info}
+        })
     except Exception as e:
         return jsonify({'code': 500, 'message': str(e)})
 

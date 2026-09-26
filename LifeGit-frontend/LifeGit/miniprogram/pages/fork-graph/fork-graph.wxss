@@ -101,6 +101,13 @@ page {
   flex-shrink: 0;
 }
 
+.repo-image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f0;
+}
+
 .repo-info {
   flex: 1;
   display: flex;
@@ -269,6 +276,20 @@ page {
   height: 64rpx;
   border-radius: 50%;
   display: block;
+}
+
+/* 无头像时的首字占位 */
+.node-avatar-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffe8d6;
+}
+
+.node-avatar-text {
+  font-size: 28rpx;
+  color: #ff8c00;
+  font-weight: 600;
 }
 
 .node-content {

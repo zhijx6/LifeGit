@@ -18,7 +18,7 @@ Page({
   loadIssues() {
     wx.showLoading({ title: '加载中...', mask: true })
 
-    const status = this.data.activeFilter === 'all' ? '' : this.data.activeFilter
+    const status = (this.data.activeFilter === 'all' || this.data.activeFilter === 'my') ? '' : this.data.activeFilter
     api.getIssueList(this.data.repoId, 1, 50, status).then((data: any) => {
       wx.hideLoading()
 
@@ -62,6 +62,11 @@ Page({
 
     if (filter === 'all') {
       this.setData({ filteredIssues: this.data.issues })
+    } else if (filter === 'my') {
+      const currentUserId = wx.getStorageSync('userId')
+      this.setData({
+        filteredIssues: this.data.issues.filter((i: any) => String(i.author.id) === String(currentUserId))
+      })
     } else {
       this.setData({
         filteredIssues: this.data.issues.filter((i: any) => i.status === filter)

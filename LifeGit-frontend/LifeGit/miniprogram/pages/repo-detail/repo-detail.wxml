@@ -20,7 +20,7 @@
         <text class="repo-model">{{repoInfo.model}}</text>
         <text class="repo-spec">{{repoInfo.spec}}</text>
       </view>
-      <view class="delete-repo-btn" wx:if="{{isOwner}}" bindtap="deleteRepo">
+      <view class="delete-repo-btn" wx:if="{{isOwner && !isTransferred}}" bindtap="deleteRepo">
         <text class="delete-text">删除仓库</text>
       </view>
     </view>
@@ -40,6 +40,14 @@
           <view class="fork-content">
             <text class="fork-title">转让物品</text>
             <text class="fork-subtitle">生成专属转让链接</text>
+          </view>
+          <text class="fork-arrow">›</text>
+        </view>
+        <view class="fork-option-card" wx:if="{{repoInfo.type !== 'place'}}" bindtap="showForkGraph">
+          <view class="fork-icon-svg"></view>
+          <view class="fork-content">
+            <text class="fork-title">流转图谱</text>
+            <text class="fork-subtitle">{{forkCount > 0 ? forkCount + ' 次流转，查看完整链路' : '查看物品所有权历史'}}</text>
           </view>
           <text class="fork-arrow">›</text>
         </view>
@@ -131,7 +139,7 @@
     <view class="events-section">
       <view class="section-header">
         <text class="section-title">事件记录</text>
-        <text class="add-event-btn" wx:if="{{isOwner}}" bindtap="addEvent">+ 添加</text>
+        <text class="add-event-btn" wx:if="{{isOwner && !isTransferred}}" bindtap="addEvent">+ 添加</text>
       </view>
       <view class="timeline">
         <block wx:for="{{events}}" wx:key="id">
@@ -141,7 +149,7 @@
             <view class="timeline-content" bindtap="goToEventDetail" data-id="{{item.id}}" data-repo-id="{{repoId}}">
               <view class="event-header-row">
                 <text class="event-time">{{item.time}}</text>
-                <text class="event-delete" wx:if="{{isOwner}}" bindtap="deleteEvent" data-id="{{item.id}}">×</text>
+                <text class="event-delete" wx:if="{{isOwner && !isTransferred}}" bindtap="deleteEvent" data-id="{{item.id}}">×</text>
               </view>
               <text class="event-type">{{item.type}}</text>
               <text class="event-description">{{item.description}}</text>

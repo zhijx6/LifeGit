@@ -16,7 +16,10 @@
         </view>
       </view>
       <view class="repo-card current">
-        <image class="repo-image" src="{{currentRepo.image}}" mode="aspectFill"></image>
+        <image wx:if="{{currentRepo.image}}" class="repo-image" src="{{currentRepo.image}}" mode="aspectFill"></image>
+        <view wx:else class="repo-image repo-image-placeholder">
+          <text class="node-avatar-text">{{currentRepo.name[0]}}</text>
+        </view>
         <view class="repo-info">
           <text class="repo-name">{{currentRepo.name}}</text>
           <text class="repo-details">{{currentRepo.brand}} · {{currentRepo.model}}</text>
@@ -44,7 +47,10 @@
           </view>
           <view class="tree-node root-node">
             <view class="node-avatar-wrapper">
-              <image class="node-avatar" src="{{rootNode.ownerAvatar}}" mode="aspectFill"></image>
+              <image wx:if="{{rootNode.ownerAvatar}}" class="node-avatar" src="{{rootNode.ownerAvatar}}" mode="aspectFill"></image>
+              <view wx:else class="node-avatar node-avatar-placeholder">
+                <text class="node-avatar-text">{{rootNode.ownerName[0]}}</text>
+              </view>
             </view>
             <view class="node-content">
               <text class="node-name">{{rootNode.ownerName}}</text>
@@ -65,7 +71,10 @@
             <view class="tree-node intermediate-node" wx:for="{{intermediateNodes}}" wx:key="id">
               <view class="node-connector-top"></view>
               <view class="node-avatar-wrapper">
-                <image class="node-avatar" src="{{item.ownerAvatar}}" mode="aspectFill"></image>
+                <image wx:if="{{item.ownerAvatar}}" class="node-avatar" src="{{item.ownerAvatar}}" mode="aspectFill"></image>
+                <view wx:else class="node-avatar node-avatar-placeholder">
+                  <text class="node-avatar-text">{{item.ownerName[0]}}</text>
+                </view>
               </view>
               <view class="node-content">
                 <text class="node-name">{{item.ownerName}}</text>
@@ -89,7 +98,10 @@
           <view class="tree-node current-node">
             <view class="node-connector-top"></view>
             <view class="node-avatar-wrapper">
-              <image class="node-avatar" src="{{currentRepo.ownerAvatar}}" mode="aspectFill"></image>
+              <image wx:if="{{currentRepo.ownerAvatar}}" class="node-avatar" src="{{currentRepo.ownerAvatar}}" mode="aspectFill"></image>
+              <view wx:else class="node-avatar node-avatar-placeholder">
+                <text class="node-avatar-text">{{currentRepo.owner[0]}}</text>
+              </view>
             </view>
             <view class="node-content">
               <text class="node-name">{{currentRepo.owner}}</text>

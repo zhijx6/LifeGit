@@ -143,7 +143,10 @@ var getRepoDetail = function(repoId) {
       model: repo.model || '',
       spec: repo.specification || '',
       image: repo.main_image || repo.cover_image || '',
-      description: repo.description || ''
+      description: repo.description || '',
+      isTransferred: repo.status === 'transferred',
+      transferredTime: (data.transfer_info && data.transfer_info.accepted_at || '').split(' ')[0],
+      newOwner: (data.transfer_info && data.transfer_info.new_owner_name) || '未知'
     };
     var typeIcons = {
       purchase: '🛒', maintenance: '🔧', upgrade: '⬆️',
